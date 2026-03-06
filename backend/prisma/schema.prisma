@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id         Int        @id @default(autoincrement())
+  name       String     @unique
+  businesses Business[]
+
+  @@map("categories")
+}
+
+model Business {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  phone       String?
+  address     String?
+  logoUrl     String?  @map("logo_url")
+  categoryId  Int      @map("category_id")
+  instagram   String?
+  facebook    String?
+  website     String?
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@map("businesses")
+}
