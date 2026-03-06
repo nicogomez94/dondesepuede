@@ -3,17 +3,17 @@ import { Link } from "react-router-dom";
 import { fetchCategories } from "../api/client";
 
 const CATEGORY_META = {
-  gastronomia:  { emoji: "🍽️", seed: "food-restaurant", color: "#ff6b35" },
-  comercios:    { emoji: "🛍️", seed: "shopping-market",  color: "#ec4899" },
-  alojamientos: { emoji: "🏨", seed: "hotel-lobby",      color: "#7c3aed" },
-  servicios:    { emoji: "⚙️", seed: "business-office",  color: "#0ea5e9" },
+  gastronomia:  { icon: "fa-utensils",         seed: "food-restaurant", color: "#ff6b35" },
+  comercios:    { icon: "fa-bag-shopping",       seed: "shopping-market", color: "#ec4899" },
+  alojamientos: { icon: "fa-hotel",             seed: "hotel-lobby",     color: "#7c3aed" },
+  servicios:    { icon: "fa-screwdriver-wrench", seed: "business-office", color: "#0ea5e9" },
 };
 
 const FALLBACK_META = [
-  { emoji: "🏪", seed: "shop-store",  color: "#10b981" },
-  { emoji: "🌟", seed: "city-street", color: "#fbbf24" },
-  { emoji: "🎯", seed: "work-team",   color: "#f43f5e" },
-  { emoji: "🚀", seed: "modern-city", color: "#6366f1" },
+  { icon: "fa-store",    seed: "shop-store",  color: "#10b981" },
+  { icon: "fa-star",     seed: "city-street", color: "#fbbf24" },
+  { icon: "fa-bullseye", seed: "work-team",   color: "#f43f5e" },
+  { icon: "fa-rocket",   seed: "modern-city", color: "#6366f1" },
 ];
 
 function normalize(str) {
@@ -46,13 +46,16 @@ function CategoriesPage() {
     <section className="stack-md">
       <img
         src="https://picsum.photos/seed/marketplace-city/1100/220"
-        alt="Categorias de comercios"
+        alt="Categorias de comercios — Bella Vista"
         className="section-banner"
         loading="lazy"
       />
 
       <div>
-        <h2>🏷️ Categorias comerciales</h2>
+        <h2>
+          <i className="fas fa-tags" style={{ marginRight: "0.5rem", color: "var(--primary)" }} />
+          Categorias comerciales
+        </h2>
         <p>Descubri los rubros disponibles para encontrar lo que buscas rapido y facil.</p>
       </div>
 
@@ -74,16 +77,18 @@ function CategoriesPage() {
                 loading="lazy"
               />
               <div className="simple-card-body">
-                <span className="card-emoji">{meta.emoji}</span>
+                <i
+                  className={`fas ${meta.icon} card-icon`}
+                  style={{ color: meta.color }}
+                />
                 <h3>{category.name}</h3>
                 <p>{category._count?.businesses || 0} comercios</p>
                 <Link
                   to={`/comercios?category=${category.id}`}
                   className="button-link"
-                  style={{
-                    background: `linear-gradient(135deg, ${meta.color}, #ec4899)`,
-                  }}
+                  style={{ background: `linear-gradient(135deg, ${meta.color}, #ec4899)` }}
                 >
+                  <i className="fas fa-arrow-right" style={{ marginRight: "0.4rem" }} />
                   Ver comercios
                 </Link>
               </div>

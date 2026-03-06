@@ -1,10 +1,10 @@
 import { NavLink, Outlet } from "react-router-dom";
 
 const navItems = [
-  { to: "/",          label: "Inicio" },
-  { to: "/categorias", label: "Categorias" },
-  { to: "/comercios",  label: "Comercios" },
-  { to: "/contacto",   label: "Contacto" },
+  { to: "/",           label: "Inicio",     icon: "fa-house" },
+  { to: "/categorias", label: "Categorias", icon: "fa-tags" },
+  { to: "/comercios",  label: "Comercios",  icon: "fa-store" },
+  { to: "/contacto",   label: "Contacto",   icon: "fa-envelope" },
 ];
 
 function SiteLayout() {
@@ -13,8 +13,14 @@ function SiteLayout() {
       <header className="site-header">
         <div className="container header-inner">
           <div>
-            <p className="eyebrow">Camara de Comercio</p>
-            <h1 className="brand">🏘️ Guia Comercial de la Ciudad</h1>
+            <p className="eyebrow">
+              <i className="fas fa-building-columns" style={{ marginRight: "0.35rem" }} />
+              Camara de Comercio
+            </p>
+            <h1 className="brand">
+              <i className="fas fa-city" style={{ marginRight: "0.4rem" }} />
+              Guia Comercial — Bella Vista
+            </h1>
           </div>
           <nav className="nav">
             {navItems.map((item) => (
@@ -24,10 +30,12 @@ function SiteLayout() {
                 end={item.to === "/"}
                 className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}
               >
+                <i className={`fas ${item.icon}`} style={{ marginRight: "0.35rem" }} />
                 {item.label}
               </NavLink>
             ))}
             <NavLink to="/admin/login" className="nav-link admin-link">
+              <i className="fas fa-lock" style={{ marginRight: "0.35rem" }} />
               Admin
             </NavLink>
           </nav>
@@ -40,8 +48,13 @@ function SiteLayout() {
 
       <footer className="site-footer">
         <div className="container">
-          <p>🌟 Camara de Comercio Local — Directorio de Comercios 🌟</p>
+          <p>
+            <i className="fas fa-star" style={{ marginRight: "0.35rem", color: "var(--accent-yellow)" }} />
+            Camara de Comercio Local — Bella Vista, Corrientes
+            <i className="fas fa-star" style={{ marginLeft: "0.35rem", color: "var(--accent-yellow)" }} />
+          </p>
           <p style={{ fontSize: "0.8rem", opacity: 0.6, marginTop: "0.4rem" }}>
+            <i className="fas fa-heart" style={{ marginRight: "0.35rem", color: "#ec4899" }} />
             Conectando vecinos y negocios de nuestra ciudad
           </p>
         </div>

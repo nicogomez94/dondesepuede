@@ -44,12 +44,15 @@ function BusinessesPage() {
   return (
     <section className="stack-md">
       <img
-        src="https://picsum.photos/seed/local-shops/1100/220"
+        src="https://corrientes.tur.ar/wp-content/uploads/2024/12/bella_vista_top.jpg"
         alt="Comercios locales"
         className="section-banner"
         loading="lazy"
       />
-      <h2>🛒 Listado de comercios</h2>
+      <h2>
+        <i className="fas fa-store" style={{ marginRight: "0.5rem", color: "var(--primary)" }} />
+        Listado de comercios
+      </h2>
       <form className="filters" onSubmit={onFilterSubmit}>
         <label>
           Buscar por nombre
@@ -75,7 +78,8 @@ function BusinessesPage() {
           </select>
         </label>
         <button type="submit" className="button-link">
-          Aplicar
+          <i className="fas fa-magnifying-glass" style={{ marginRight: "0.4rem" }} />
+          Buscar
         </button>
       </form>
 

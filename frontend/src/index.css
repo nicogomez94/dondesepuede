@@ -220,29 +220,128 @@ a { color: inherit; }
   position: relative;
   border-radius: 28px;
   overflow: hidden;
-  min-height: 400px;
+  min-height: 420px;
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 2rem;
   align-items: center;
   padding: 3rem;
-  background:
-    linear-gradient(135deg, rgba(255, 107, 53, 0.93) 0%, rgba(124, 58, 237, 0.88) 55%, rgba(14, 165, 233, 0.85) 100%),
-    url('https://picsum.photos/seed/citystreet99/1400/500') center/cover no-repeat;
   box-shadow: 0 24px 70px rgba(255, 107, 53, 0.35);
   animation: slide-up 0.65s ease both;
+  background: #1a0a00;
 }
 
-/* decorative pattern overlay */
-.hero::before {
+/* ==============================
+   HERO SLIDESHOW
+   ============================== */
+
+.hero-slideshow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.4s ease;
+}
+
+.hero-slide.active {
+  opacity: 1;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 107, 53, 0.88) 0%,
+    rgba(124, 58, 237, 0.82) 55%,
+    rgba(14, 165, 233, 0.78) 100%
+  );
+  z-index: 1;
+}
+
+.hero-overlay::after {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Ccircle cx='20' cy='20' r='3'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg width='36' height='36' viewBox='0 0 36 36' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='18' cy='18' r='2.5' fill='%23ffffff' fill-opacity='0.07'/%3E%3C/svg%3E");
   pointer-events: none;
 }
 
-.hero > * { position: relative; z-index: 1; }
+.hero-dots {
+  position: absolute;
+  bottom: 1.1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.55rem;
+  z-index: 5;
+}
+
+.hero-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  background: transparent;
+  padding: 0;
+  transition: background 0.3s, transform 0.3s, border-color 0.3s;
+}
+
+.hero-dot.active {
+  background: #fff;
+  border-color: #fff;
+  transform: scale(1.45);
+}
+
+.hero-arrows {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.hero-arrow {
+    pointer-events: all;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    color: #fff;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.75rem;
+    backdrop-filter: blur(6px);
+    transition: background 0.2s, transform 0.2s;
+}
+
+.hero-arrow:hover {
+  background: rgba(255, 255, 255, 0.38);
+  transform: scale(1.12);
+}
+
+.hero-content,
+.hero .stats-box {
+  position: relative;
+  z-index: 2;
+}
+
+/* no ::before needed anymore */
 
 .hero h2 {
   margin: 0.6rem 0 1.2rem;
@@ -371,11 +470,10 @@ a { color: inherit; }
   font-size: 0.9rem;
 }
 
-.card-emoji {
-  font-size: 2.2rem;
-  line-height: 1;
+.card-icon {
+  font-size: 1.9rem;
   display: block;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.3rem;
 }
 
 /* top color stripe per card (set via inline style --card-color) */

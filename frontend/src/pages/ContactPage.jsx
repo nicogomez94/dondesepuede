@@ -3,13 +3,16 @@ function ContactPage() {
     <section className="stack-md">
       <img
         src="https://picsum.photos/seed/contact-office/1100/240"
-        alt="Contacto Camara de Comercio"
+        alt="Contacto — Camara de Comercio Bella Vista"
         className="contact-image"
         loading="lazy"
       />
 
       <div>
-        <h2>📬 Contacto</h2>
+        <h2>
+          <i className="fas fa-envelope-open-text" style={{ marginRight: "0.5rem", color: "var(--primary)" }} />
+          Contacto
+        </h2>
         <p>
           Si queres sumar tu comercio al directorio o actualizar informacion,
           comunicate con la Camara de Comercio. Estamos para ayudarte.
@@ -17,10 +20,22 @@ function ContactPage() {
       </div>
 
       <div className="contact-info-card">
-        <p>📧 <strong>Email:</strong> contacto@camaracomercio.local</p>
-        <p>📞 <strong>Telefono:</strong> +54 9 11 4000 0000</p>
-        <p>📍 <strong>Direccion:</strong> Calle Principal 123, Ciudad</p>
-        <p>🕐 <strong>Horario:</strong> Lunes a Viernes, 8:00 – 18:00</p>
+        <p>
+          <i className="fas fa-envelope" style={{ marginRight: "0.6rem", color: "var(--primary)" }} />
+          <strong>Email:</strong> contacto@camaracomercio.local
+        </p>
+        <p>
+          <i className="fas fa-phone" style={{ marginRight: "0.6rem", color: "var(--secondary)" }} />
+          <strong>Telefono:</strong> +54 9 11 4000 0000
+        </p>
+        <p>
+          <i className="fas fa-location-dot" style={{ marginRight: "0.6rem", color: "var(--accent-pink)" }} />
+          <strong>Direccion:</strong> Calle Principal 123, Bella Vista, Corrientes
+        </p>
+        <p>
+          <i className="fas fa-clock" style={{ marginRight: "0.6rem", color: "var(--accent-teal)" }} />
+          <strong>Horario:</strong> Lunes a Viernes, 8:00 – 18:00
+        </p>
       </div>
     </section>
   );
