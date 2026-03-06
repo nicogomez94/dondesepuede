@@ -43,7 +43,13 @@ function BusinessesPage() {
 
   return (
     <section className="stack-md">
-      <h2>Listado de comercios</h2>
+      <img
+        src="https://picsum.photos/seed/local-shops/1100/220"
+        alt="Comercios locales"
+        className="section-banner"
+        loading="lazy"
+      />
+      <h2>🛒 Listado de comercios</h2>
       <form className="filters" onSubmit={onFilterSubmit}>
         <label>
           Buscar por nombre
