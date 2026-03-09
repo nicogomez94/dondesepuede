@@ -155,6 +155,21 @@ a { color: inherit; }
   gap: 0.4rem;
 }
 
+.mobile-nav-toggle {
+  display: none;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.1rem;
+  backdrop-filter: blur(4px);
+}
+
 .nav-link {
   text-decoration: none;
   padding: 0.45rem 0.95rem;
@@ -1306,9 +1321,41 @@ textarea:focus {
 
 @media (max-width: 900px) {
   .header-inner {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
     padding: 0.8rem 0;
+  }
+
+  .brand-link {
+    max-width: calc(100% - 52px);
+  }
+
+  .brand {
+    font-size: 1.15rem;
+    line-height: 1.2;
+  }
+
+  .mobile-nav-toggle {
+    display: inline-flex;
+  }
+
+  .nav {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding-top: 0.75rem;
+  }
+
+  .nav.mobile-open {
+    display: flex;
+  }
+
+  .nav-link {
+    width: 100%;
+    text-align: left;
   }
 
   .hero,
@@ -1326,7 +1373,7 @@ textarea:focus {
   }
 
   .hero-logo-wrap img {
-    width: 100px;
+    width: 200px;
   }
 
   .hero-logos-divider {
@@ -1347,5 +1394,20 @@ textarea:focus {
   .hero {
     padding: 2rem 1.5rem;
     min-height: auto;
+  }
+}
+
+@media (max-width: 420px) {
+  .hero-content>.eyebrow {
+    font-size: 0.70rem;
+  }
+  .brand-prefix {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero-logos-divider{
+    display: none;
   }
 }

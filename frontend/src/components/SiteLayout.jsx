@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 
 const navItems = [
@@ -8,6 +9,10 @@ const navItems = [
 ];
 
 function SiteLayout() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
+
   return (
     <div className="site-shell">
       <header className="site-header">
@@ -19,22 +24,34 @@ function SiteLayout() {
             </p>
             <h1 className="brand">
               <i className="fas fa-umbrella-beach" style={{ marginRight: "0.4rem" }} />
-              Guia Comercial — Paso de la Patria
+              <span className="brand-prefix">Guia Comercial — </span>
+              <span className="brand-location">Paso de la Patria</span>
             </h1>
           </Link>
-          <nav className="nav">
+          <button
+            type="button"
+            className="mobile-nav-toggle"
+            aria-label={isMobileMenuOpen ? "Cerrar menu" : "Abrir menu"}
+            aria-expanded={isMobileMenuOpen}
+            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+          >
+            <i className={`fas ${isMobileMenuOpen ? "fa-xmark" : "fa-bars"}`} />
+          </button>
+
+          <nav className={`nav ${isMobileMenuOpen ? "mobile-open" : ""}`}>
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 end={item.to === "/"}
                 className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}
+                onClick={closeMobileMenu}
               >
                 <i className={`fas ${item.icon}`} style={{ marginRight: "0.35rem" }} />
                 {item.label}
               </NavLink>
             ))}
-            <NavLink to="/admin/login" className="nav-link admin-link">
+            <NavLink to="/admin/login" className="nav-link admin-link" onClick={closeMobileMenu}>
               <i className="fas fa-lock" style={{ marginRight: "0.35rem" }} />
               Admin
             </NavLink>
