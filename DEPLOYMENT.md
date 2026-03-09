@@ -142,10 +142,10 @@ ADMIN_PASSWORD=[auto-generado o configura manualmente]
 Verifica en **`emilio-frontend`** → **Environment**:
 
 ```bash
-VITE_API_URL=https://emilio-backend.onrender.com
+VITE_API_URL=https://emilio-backend.onrender.com/api
 ```
 
-**Importante:** Asegúrate de que esta URL coincida exactamente con la URL de tu backend.
+**Importante:** Esta URL debe incluir `/api` al final.
 
 ---
 
