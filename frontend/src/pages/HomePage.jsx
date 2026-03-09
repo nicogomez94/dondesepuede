@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchBusinesses, fetchCategories } from "../api/client";
+import { fetchBusinesses, fetchCategories, fetchEvents } from "../api/client";
 import BusinessCard from "../components/BusinessCard";
+import EventCard from "../components/EventCard";
 
 // ─── Slideshow images ───────────────────────────────────────────────────────
 // Reemplaza estas URLs con fotos reales de Paso de la Patria, Corrientes
@@ -29,6 +30,16 @@ const SLIDES = [
 ];
 
 const INTERVAL_MS = 4500;
+
+const EMERGENCY_NUMBERS = [
+  { icon: "fa-shield-halved", color: "#2563eb", label: "Policia", number: "101" },
+  { icon: "fa-fire-extinguisher", color: "#dc2626", label: "Bomberos", number: "100" },
+  { icon: "fa-truck-medical", color: "#16a34a", label: "Ambulancia", number: "107" },
+  { icon: "fa-house-flood-water", color: "#7c3aed", label: "Defensa Civil", number: "103" },
+  { icon: "fa-anchor", color: "#0891b2", label: "Prefectura Naval", number: "106" },
+  { icon: "fa-building-columns", color: "#d97706", label: "Comisaria local", number: "0000-000000" },
+  { icon: "fa-hospital", color: "#059669", label: "Hospital municipal", number: "0000-000000" },
+];
 
 // ─── Category meta ───────────────────────────────────────────────────────────
 const CATEGORY_META = {
@@ -106,23 +117,38 @@ function HeroSlideshow() {
 function HomePage() {
   const [categories, setCategories] = useState([]);
   const [businesses, setBusinesses] = useState([]);
+  const [events, setEvents] = useState([]);
   const [error, setError] = useState("");
+  const [contactForm, setContactForm] = useState({ nombre: "", email: "", asunto: "", mensaje: "" });
+  const [contactSent, setContactSent] = useState(false);
 
   useEffect(() => {
     async function loadData() {
       try {
-        const [categoriesData, businessesData] = await Promise.all([
+        const [categoriesData, businessesData, eventsData] = await Promise.all([
           fetchCategories(),
           fetchBusinesses(),
+          fetchEvents({ status: "upcoming" }),
         ]);
         setCategories(categoriesData);
         setBusinesses(businessesData.slice(0, 3));
+        setEvents(eventsData.slice(0, 3));
       } catch (e) {
         setError(e.message);
       }
     }
     loadData();
   }, []);
+
+  function handleContactChange(event) {
+    const { name, value } = event.target;
+    setContactForm((prev) => ({ ...prev, [name]: value }));
+  }
+
+  function handleContactSubmit(event) {
+    event.preventDefault();
+    setContactSent(true);
+  }
 
   return (
     <section className="stack-lg">
@@ -239,6 +265,136 @@ function HomePage() {
             Ver todos los comercios
             <i className="fas fa-arrow-right" style={{ marginLeft: "0.5rem" }} />
           </Link>
+        </div>
+      </section>
+
+      {/* FEATURED EVENTS */}
+      <section className="stack-md">
+        <h3>
+          <i className="fas fa-calendar-days" style={{ marginRight: "0.5rem", color: "var(--secondary)" }} />
+          Eventos destacados
+        </h3>
+        {!events.length ? (
+          <p>No hay eventos destacados por el momento.</p>
+        ) : (
+          <div className="event-grid">
+            {events.map((event) => (
+              <EventCard key={event.id} event={event} />
+            ))}
+          </div>
+        )}
+        <div style={{ textAlign: "center", marginTop: "1.5rem" }}>
+          <Link to="/eventos" className="button-link">
+            Ver todos los eventos
+            <i className="fas fa-arrow-right" style={{ marginLeft: "0.5rem" }} />
+          </Link>
+        </div>
+      </section>
+
+      {/* CONTACT SECTION */}
+      <section className="stack-md">
+        <h3>
+          <i className="fas fa-envelope-open-text" style={{ marginRight: "0.5rem", color: "var(--primary)" }} />
+          Contacto
+        </h3>
+
+        <div className="contact-layout">
+          <div className="contact-form-wrap">
+            <h2>Envianos un mensaje</h2>
+            <p className="contact-form-desc">
+              Completá el formulario y nos ponemos en contacto a la brevedad.
+            </p>
+            {contactSent ? (
+              <div className="contact-success">
+                <i className="fas fa-circle-check" />
+                <p>Mensaje enviado. Gracias por contactarnos.</p>
+              </div>
+            ) : (
+              <form className="contact-form" onSubmit={handleContactSubmit}>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="home-nombre">Nombre</label>
+                    <input
+                      id="home-nombre"
+                      name="nombre"
+                      type="text"
+                      placeholder="Tu nombre completo"
+                      value={contactForm.nombre}
+                      onChange={handleContactChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="home-email">Email</label>
+                    <input
+                      id="home-email"
+                      name="email"
+                      type="email"
+                      placeholder="tu@email.com"
+                      value={contactForm.email}
+                      onChange={handleContactChange}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="home-asunto">Asunto</label>
+                  <input
+                    id="home-asunto"
+                    name="asunto"
+                    type="text"
+                    placeholder="¿En qué podemos ayudarte?"
+                    value={contactForm.asunto}
+                    onChange={handleContactChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="home-mensaje">Mensaje</label>
+                  <textarea
+                    id="home-mensaje"
+                    name="mensaje"
+                    rows={5}
+                    placeholder="Contanos más..."
+                    value={contactForm.mensaje}
+                    onChange={handleContactChange}
+                    required
+                  />
+                </div>
+                <button type="submit" className="contact-submit">
+                  <i className="fas fa-paper-plane" style={{ marginRight: "0.5rem" }} />
+                  Enviar mensaje
+                </button>
+              </form>
+            )}
+          </div>
+
+          <div className="contact-info-wrap">
+            <h2>
+              <i className="fas fa-phone-volume" style={{ marginRight: "0.5rem", color: "var(--primary)" }} />
+              Telefonos utiles
+            </h2>
+            <p style={{ opacity: 0.6, marginBottom: "1rem" }}>
+              Numeros de emergencia y servicios esenciales de la zona.
+            </p>
+            <div className="emergency-grid">
+              {EMERGENCY_NUMBERS.map((item) => (
+                <a
+                  key={item.label}
+                  href={`tel:${item.number.replace(/\D/g, "")}`}
+                  className="emergency-card"
+                >
+                  <div className="emergency-icon" style={{ background: item.color + "18", color: item.color }}>
+                    <i className={`fas ${item.icon}`} />
+                  </div>
+                  <div className="emergency-info">
+                    <span className="emergency-label">{item.label}</span>
+                    <span className="emergency-number">{item.number}</span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
     </section>
