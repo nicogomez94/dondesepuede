@@ -26,7 +26,7 @@ function AdminLoginPage() {
   }
 
   return (
-    <main className="auth-page">
+    <section className="auth-page">
       <form className="auth-card" onSubmit={onSubmit}>
         <h2>Ingreso administrador</h2>
         <p>Usa tus credenciales para gestionar la guia comercial.</p>
@@ -48,7 +48,7 @@ function AdminLoginPage() {
         </button>
         {error && <p className="error-message">{error}</p>}
       </form>
-    </main>
+    </section>
   );
 }
 

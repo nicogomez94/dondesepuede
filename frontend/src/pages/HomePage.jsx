@@ -98,25 +98,6 @@ function HeroSlideshow() {
       ))}
       <div className="hero-overlay" />
 
-      <div className="hero-arrows">
-        <button className="hero-arrow" onClick={() => handleArrow(-1)} aria-label="Anterior">
-          <i className="fas fa-chevron-left" />
-        </button>
-        <button className="hero-arrow" onClick={() => handleArrow(1)} aria-label="Siguiente">
-          <i className="fas fa-chevron-right" />
-        </button>
-      </div>
-
-      <div className="hero-dots">
-        {SLIDES.map((_, i) => (
-          <button
-            key={i}
-            className={`hero-dot${i === current ? " active" : ""}`}
-            onClick={() => handleDot(i)}
-            aria-label={`Ir a slide ${i + 1}`}
-          />
-        ))}
-      </div>
     </div>
   );
 }
@@ -165,10 +146,11 @@ function HomePage() {
             <i className="fas fa-location-dot" style={{ marginRight: "0.4rem" }} />
             Paso de la Patria, Corrientes
           </p>
-          <h2>Conecta con los comercios de tu ciudad desde un solo lugar</h2>
+          <h2>Descubri Paso de la Patria, entre playas, rio y aventura</h2>
           <p>
-            La Camara de Comercio impulsa el desarrollo local con esta guia
-            comercial digital para vecinos, turistas y empresas.
+            Explora uno de los destinos mas elegidos de Corrientes: pesca
+            deportiva, naturaleza, gastronomia y experiencias para disfrutar
+            todo el ano.
           </p>
           <Link to="/comercios" className="button-link">
             <i className="fas fa-map" style={{ marginRight: "0.5rem" }} />

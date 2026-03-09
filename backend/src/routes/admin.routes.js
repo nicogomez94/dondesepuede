@@ -20,6 +20,37 @@ function parseBusinessPayload(body) {
   };
 }
 
+function parseEventPayload(body) {
+  return {
+    title: body.title?.trim(),
+    description: body.description?.trim() || "",
+    location: body.location?.trim() || "",
+    startsAt: body.startsAt ? new Date(body.startsAt) : null,
+    endsAt: body.endsAt ? new Date(body.endsAt) : null,
+    imageUrl: body.imageUrl?.trim() || body.image_url?.trim() || null,
+  };
+}
+
+function validateEventPayload(payload) {
+  if (!payload.title || !payload.description || !payload.location || !payload.startsAt) {
+    return "Titulo, descripcion, lugar y fecha de inicio son obligatorios.";
+  }
+
+  if (Number.isNaN(payload.startsAt.getTime())) {
+    return "La fecha de inicio es invalida.";
+  }
+
+  if (payload.endsAt && Number.isNaN(payload.endsAt.getTime())) {
+    return "La fecha de fin es invalida.";
+  }
+
+  if (payload.endsAt && payload.endsAt < payload.startsAt) {
+    return "La fecha de fin no puede ser anterior al inicio.";
+  }
+
+  return null;
+}
+
 router.get("/categories", async (_, res, next) => {
   try {
     const categories = await prisma.category.findMany({
@@ -156,6 +187,77 @@ router.delete("/businesses/:id", async (req, res, next) => {
     }
 
     await prisma.business.delete({ where: { id } });
+    return res.status(204).send();
+  } catch (error) {
+    return next(error);
+  }
+});
+
+router.get("/events", async (_, res, next) => {
+  try {
+    const events = await prisma.event.findMany({
+      orderBy: [{ startsAt: "asc" }, { id: "desc" }],
+    });
+
+    return res.json(events);
+  } catch (error) {
+    return next(error);
+  }
+});
+
+router.post("/events", async (req, res, next) => {
+  try {
+    const payload = parseEventPayload(req.body);
+    const validationError = validateEventPayload(payload);
+
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
+    }
+
+    const event = await prisma.event.create({
+      data: payload,
+    });
+
+    return res.status(201).json(event);
+  } catch (error) {
+    return next(error);
+  }
+});
+
+router.put("/events/:id", async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const payload = parseEventPayload(req.body);
+    const validationError = validateEventPayload(payload);
+
+    if (!id) {
+      return res.status(400).json({ message: "ID invalido." });
+    }
+
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
+    }
+
+    const event = await prisma.event.update({
+      where: { id },
+      data: payload,
+    });
+
+    return res.json(event);
+  } catch (error) {
+    return next(error);
+  }
+});
+
+router.delete("/events/:id", async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+
+    if (!id) {
+      return res.status(400).json({ message: "ID invalido." });
+    }
+
+    await prisma.event.delete({ where: { id } });
     return res.status(204).send();
   } catch (error) {
     return next(error);

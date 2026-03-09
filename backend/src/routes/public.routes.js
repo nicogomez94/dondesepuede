@@ -3,6 +3,72 @@ const prisma = require("../config/prisma");
 
 const router = express.Router();
 
+function buildEventFilters(query) {
+  const { search = "", month = "", status = "" } = query;
+  const filters = [];
+
+  if (search) {
+    filters.push({
+      OR: [
+        {
+          title: {
+            contains: String(search),
+            mode: "insensitive",
+          },
+        },
+        {
+          location: {
+            contains: String(search),
+            mode: "insensitive",
+          },
+        },
+      ],
+    });
+  }
+
+  if (month && /^\d{4}-\d{2}$/.test(String(month))) {
+    const [year, monthIndex] = String(month).split("-").map(Number);
+    const start = new Date(year, monthIndex - 1, 1);
+    const end = new Date(year, monthIndex, 1);
+
+    filters.push({
+      startsAt: {
+        gte: start,
+        lt: end,
+      },
+    });
+  }
+
+  const now = new Date();
+  if (status === "upcoming") {
+    filters.push({
+      OR: [
+        { endsAt: { gte: now } },
+        {
+          AND: [{ endsAt: null }, { startsAt: { gte: now } }],
+        },
+      ],
+    });
+  }
+
+  if (status === "past") {
+    filters.push({
+      OR: [
+        { endsAt: { lt: now } },
+        {
+          AND: [{ endsAt: null }, { startsAt: { lt: now } }],
+        },
+      ],
+    });
+  }
+
+  if (!filters.length) {
+    return {};
+  }
+
+  return { AND: filters };
+}
+
 router.get("/categories", async (_, res, next) => {
   try {
     const categories = await prisma.category.findMany({
@@ -72,6 +138,19 @@ router.get("/businesses/:id", async (req, res, next) => {
     return res.json(business);
   } catch (error) {
     return next(error);
+  }
+});
+
+router.get("/events", async (req, res, next) => {
+  try {
+    const events = await prisma.event.findMany({
+      where: buildEventFilters(req.query),
+      orderBy: [{ startsAt: "asc" }, { id: "asc" }],
+    });
+
+    res.json(events);
+  } catch (error) {
+    next(error);
   }
 });
 

@@ -52,6 +52,15 @@ export async function fetchBusinessById(id) {
   return request(`/businesses/${id}`);
 }
 
+export async function fetchEvents({ search = "", month = "", status = "" } = {}) {
+  const query = new URLSearchParams();
+  if (search.trim()) query.set("search", search.trim());
+  if (month) query.set("month", month);
+  if (status) query.set("status", status);
+  const suffix = query.toString() ? `?${query.toString()}` : "";
+  return request(`/events${suffix}`);
+}
+
 export async function loginAdmin(credentials) {
   return request("/auth/login", {
     method: "POST",
@@ -108,6 +117,33 @@ export async function adminUpdateBusiness(token, id, payload) {
 
 export async function adminDeleteBusiness(token, id) {
   return request(`/admin/businesses/${id}`, {
+    method: "DELETE",
+    token,
+  });
+}
+
+export async function adminFetchEvents(token) {
+  return request("/admin/events", { token });
+}
+
+export async function adminCreateEvent(token, payload) {
+  return request("/admin/events", {
+    method: "POST",
+    token,
+    body: payload,
+  });
+}
+
+export async function adminUpdateEvent(token, id, payload) {
+  return request(`/admin/events/${id}`, {
+    method: "PUT",
+    token,
+    body: payload,
+  });
+}
+
+export async function adminDeleteEvent(token, id) {
+  return request(`/admin/events/${id}`, {
     method: "DELETE",
     token,
   });

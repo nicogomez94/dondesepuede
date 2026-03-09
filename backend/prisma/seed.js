@@ -54,6 +54,47 @@ async function main() {
     ],
     skipDuplicates: true,
   });
+
+  const now = new Date();
+  const upcomingEvents = [
+    {
+      title: "Feria Gastronomica Costera",
+      description: "Productores, food trucks y musica en vivo frente al rio.",
+      location: "Anfiteatro Municipal",
+      startsAt: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7, 19, 0),
+      endsAt: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7, 23, 30),
+      imageUrl: "https://placehold.co/900x600?text=Feria+Gastronomica",
+    },
+    {
+      title: "Expo Emprendedores Locales",
+      description: "Muestra comercial con emprendimientos y promociones especiales.",
+      location: "Centro de Convenciones",
+      startsAt: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 15, 10, 0),
+      endsAt: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 15, 20, 0),
+      imageUrl: "https://placehold.co/900x600?text=Expo+Emprendedores",
+    },
+    {
+      title: "Festival de Temporada",
+      description: "Shows en vivo, actividades familiares y paseo de artesanos.",
+      location: "Playa Bahia Punta Mitre",
+      startsAt: new Date(now.getFullYear(), now.getMonth() + 1, 5, 18, 30),
+      endsAt: new Date(now.getFullYear(), now.getMonth() + 1, 5, 23, 59),
+      imageUrl: "https://placehold.co/900x600?text=Festival+de+Temporada",
+    },
+  ];
+
+  for (const event of upcomingEvents) {
+    const existingEvent = await prisma.event.findFirst({
+      where: {
+        title: event.title,
+        startsAt: event.startsAt,
+      },
+    });
+
+    if (!existingEvent) {
+      await prisma.event.create({ data: event });
+    }
+  }
 }
 
 main()

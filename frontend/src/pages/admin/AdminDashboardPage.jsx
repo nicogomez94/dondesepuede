@@ -3,12 +3,16 @@ import { useNavigate } from "react-router-dom";
 import {
   adminCreateBusiness,
   adminCreateCategory,
+  adminCreateEvent,
   adminDeleteBusiness,
   adminDeleteCategory,
+  adminDeleteEvent,
   adminFetchBusinesses,
   adminFetchCategories,
+  adminFetchEvents,
   adminUpdateBusiness,
   adminUpdateCategory,
+  adminUpdateEvent,
   adminUploadImage,
   resolveImageUrl,
 } from "../../api/client";
@@ -26,6 +30,26 @@ const emptyBusiness = {
   website: "",
 };
 
+const emptyEvent = {
+  id: null,
+  title: "",
+  description: "",
+  location: "",
+  startsAt: "",
+  endsAt: "",
+  imageUrl: "",
+};
+
+function toDateTimeLocalValue(value) {
+  if (!value) return "";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const offset = date.getTimezoneOffset();
+  return new Date(date.getTime() - offset * 60_000).toISOString().slice(0, 16);
+}
+
 function AdminDashboardPage() {
   const navigate = useNavigate();
   const token = localStorage.getItem("adminToken");
@@ -33,9 +57,11 @@ function AdminDashboardPage() {
   const [tab, setTab] = useState("businesses");
   const [categories, setCategories] = useState([]);
   const [businesses, setBusinesses] = useState([]);
+  const [events, setEvents] = useState([]);
   const [categoryName, setCategoryName] = useState("");
   const [editingCategory, setEditingCategory] = useState(null);
   const [businessForm, setBusinessForm] = useState(emptyBusiness);
+  const [eventForm, setEventForm] = useState(emptyEvent);
   const [feedback, setFeedback] = useState("");
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -50,12 +76,14 @@ function AdminDashboardPage() {
   const loadAdminData = useCallback(async () => {
     try {
       setError("");
-      const [categoriesData, businessesData] = await Promise.all([
+      const [categoriesData, businessesData, eventsData] = await Promise.all([
         adminFetchCategories(token),
         adminFetchBusinesses(token),
+        adminFetchEvents(token),
       ]);
       setCategories(categoriesData);
       setBusinesses(businessesData);
+      setEvents(eventsData);
     } catch (e) {
       if (e.message.toLowerCase().includes("token")) {
         localStorage.removeItem("adminToken");
@@ -150,23 +178,60 @@ function AdminDashboardPage() {
     }
   }
 
-  async function uploadImage(event) {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  async function submitEvent(event) {
+    event.preventDefault();
+    setFeedback("");
+    setError("");
 
+    try {
+      const payload = {
+        ...eventForm,
+        startsAt: eventForm.startsAt || null,
+        endsAt: eventForm.endsAt || null,
+      };
+
+      if (eventForm.id) {
+        await adminUpdateEvent(token, eventForm.id, payload);
+        setFeedback("Evento actualizado.");
+      } else {
+        await adminCreateEvent(token, payload);
+        setFeedback("Evento creado.");
+      }
+
+      setEventForm(emptyEvent);
+      await loadAdminData();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  async function removeEvent(id) {
+    if (!window.confirm("Eliminar evento?")) return;
+    setFeedback("");
+    setError("");
+
+    try {
+      await adminDeleteEvent(token, id);
+      setFeedback("Evento eliminado.");
+      await loadAdminData();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  async function uploadImageTo(setter, file) {
     setUploading(true);
     setError("");
     setFeedback("");
 
     try {
       const response = await adminUploadImage(token, file);
-      setBusinessForm((prev) => ({ ...prev, logoUrl: response.url }));
+      setter((prev) => ({ ...prev, imageUrl: response.url }));
       setFeedback("Imagen subida correctamente.");
     } catch (e) {
       setError(e.message);
     } finally {
       setUploading(false);
-      event.target.value = "";
     }
   }
 
@@ -186,16 +251,36 @@ function AdminDashboardPage() {
     setTab("businesses");
   }
 
+  function startEditEvent(event) {
+    setEventForm({
+      id: event.id,
+      title: event.title || "",
+      description: event.description || "",
+      location: event.location || "",
+      startsAt: toDateTimeLocalValue(event.startsAt),
+      endsAt: toDateTimeLocalValue(event.endsAt),
+      imageUrl: event.imageUrl || "",
+    });
+    setTab("events");
+  }
+
   function logout() {
     localStorage.removeItem("adminToken");
     navigate("/admin/login");
   }
 
   return (
-    <main className="admin-page">
+    <section className="admin-page">
       <header className="admin-header">
         <h1>Panel de administracion</h1>
         <div className="admin-actions">
+          <button
+            type="button"
+            className={tab === "events" ? "button-link" : "ghost-button"}
+            onClick={() => setTab("events")}
+          >
+            Eventos
+          </button>
           <button
             type="button"
             className={tab === "businesses" ? "button-link" : "ghost-button"}
@@ -218,6 +303,128 @@ function AdminDashboardPage() {
 
       {feedback && <p className="ok-message">{feedback}</p>}
       {error && <p className="error-message">{error}</p>}
+
+      {tab === "events" && (
+        <section className="admin-grid">
+          <form className="form-card" onSubmit={submitEvent}>
+            <h2>{eventForm.id ? "Editar evento" : "Nuevo evento"}</h2>
+            <label>
+              Titulo
+              <input
+                value={eventForm.title}
+                onChange={(event) =>
+                  setEventForm((prev) => ({ ...prev, title: event.target.value }))
+                }
+                required
+              />
+            </label>
+            <label>
+              Descripcion
+              <textarea
+                rows={3}
+                value={eventForm.description}
+                onChange={(event) =>
+                  setEventForm((prev) => ({ ...prev, description: event.target.value }))
+                }
+                required
+              />
+            </label>
+            <label>
+              Lugar
+              <input
+                value={eventForm.location}
+                onChange={(event) =>
+                  setEventForm((prev) => ({ ...prev, location: event.target.value }))
+                }
+                required
+              />
+            </label>
+            <label>
+              Inicio
+              <input
+                type="datetime-local"
+                value={eventForm.startsAt}
+                onChange={(event) =>
+                  setEventForm((prev) => ({ ...prev, startsAt: event.target.value }))
+                }
+                required
+              />
+            </label>
+            <label>
+              Fin
+              <input
+                type="datetime-local"
+                value={eventForm.endsAt}
+                onChange={(event) =>
+                  setEventForm((prev) => ({ ...prev, endsAt: event.target.value }))
+                }
+              />
+            </label>
+            <label>
+              Imagen (URL)
+              <input
+                value={eventForm.imageUrl}
+                onChange={(event) =>
+                  setEventForm((prev) => ({ ...prev, imageUrl: event.target.value }))
+                }
+              />
+            </label>
+            <label>
+              Subir imagen
+              <input
+                type="file"
+                accept="image/*"
+                disabled={uploading}
+                onChange={async (event) => {
+                  const file = event.target.files?.[0];
+                  if (!file) return;
+                  await uploadImageTo(setEventForm, file);
+                  event.target.value = "";
+                }}
+              />
+            </label>
+            {eventForm.imageUrl && (
+              <img
+                src={resolveImageUrl(eventForm.imageUrl)}
+                alt="Preview del evento"
+                className="preview-image"
+              />
+            )}
+            <button type="submit" className="button-link">
+              {eventForm.id ? "Guardar cambios" : "Crear evento"}
+            </button>
+          </form>
+
+          <div className="list-card">
+            <h2>Eventos</h2>
+            <ul className="admin-list">
+              {events.map((event) => (
+                <li key={event.id}>
+                  <span>
+                    {event.title} - {new Date(event.startsAt).toLocaleString("es-AR")}
+                  </span>
+                  <div>
+                    <button
+                      type="button"
+                      className="ghost-button"
+                      onClick={() => startEditEvent(event)}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      type="button"
+                      className="danger-button"
+                      onClick={() => removeEvent(event.id)}
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
 
       {tab === "categories" && (
         <section className="admin-grid">
@@ -368,7 +575,17 @@ function AdminDashboardPage() {
             </label>
             <label>
               Subir imagen
-              <input type="file" accept="image/*" onChange={uploadImage} disabled={uploading} />
+              <input
+                type="file"
+                accept="image/*"
+                disabled={uploading}
+                onChange={async (event) => {
+                  const file = event.target.files?.[0];
+                  if (!file) return;
+                  await uploadImageTo(setBusinessForm, file);
+                  event.target.value = "";
+                }}
+              />
             </label>
             {businessForm.logoUrl && (
               <img
@@ -412,7 +629,7 @@ function AdminDashboardPage() {
           </div>
         </section>
       )}
-    </main>
+    </section>
   );
 }
 

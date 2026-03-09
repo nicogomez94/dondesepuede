@@ -1,7 +1,7 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 
 const navItems = [
-  { to: "/",           label: "Inicio",     icon: "fa-house" },
+  { to: "/eventos",    label: "Eventos",    icon: "fa-calendar-days" },
   { to: "/categorias", label: "Categorias", icon: "fa-tags" },
   { to: "/comercios",  label: "Comercios",  icon: "fa-store" },
   { to: "/contacto",   label: "Contacto",   icon: "fa-envelope" },
@@ -12,16 +12,16 @@ function SiteLayout() {
     <div className="site-shell">
       <header className="site-header">
         <div className="container header-inner">
-          <div>
+          <Link to="/" className="brand-link">
             <p className="eyebrow">
               <i className="fas fa-building-columns" style={{ marginRight: "0.35rem" }} />
               Camara de Comercio
             </p>
             <h1 className="brand">
-              <i className="fas fa-city" style={{ marginRight: "0.4rem" }} />
+              <i className="fas fa-umbrella-beach" style={{ marginRight: "0.4rem" }} />
               Guia Comercial — Paso de la Patria
             </h1>
-          </div>
+          </Link>
           <nav className="nav">
             {navItems.map((item) => (
               <NavLink

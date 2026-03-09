@@ -128,6 +128,10 @@ a { color: inherit; }
   letter-spacing: -0.01em;
 }
 
+.brand-link {
+  text-decoration: none;
+}
+
 .eyebrow {
   margin: 0;
   color: var(--primary);
@@ -138,7 +142,7 @@ a { color: inherit; }
 }
 
 .site-header .eyebrow {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* ==============================
@@ -380,6 +384,7 @@ a { color: inherit; }
 .hero-logo-wrap img {
   display: block;
   width: max-content;
+  border-radius: 10px;
   max-width: 100%;
   height: auto;
   object-fit: contain;
@@ -487,6 +492,12 @@ a { color: inherit; }
   gap: 1.5rem;
 }
 
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
 /* ==============================
    SIMPLE CARD (categories)
    ============================== */
@@ -564,7 +575,31 @@ a { color: inherit; }
   box-shadow: 0 28px 55px rgba(255, 107, 53, 0.22);
 }
 
+.event-card {
+  border: 2.5px solid var(--line);
+  background: linear-gradient(180deg, #fffaf4, #ffffff);
+  border-radius: 22px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
+  transition: transform 0.28s cubic-bezier(.34,1.56,.64,1), box-shadow 0.28s;
+  animation: slide-up 0.55s ease both;
+}
+
+.event-card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 28px 55px rgba(236, 72, 153, 0.2);
+}
+
 .business-card-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.event-card-image {
   width: 100%;
   height: 200px;
   object-fit: cover;
@@ -579,7 +614,21 @@ a { color: inherit; }
   flex: 1;
 }
 
+.event-card-body {
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+}
+
 .business-card-body h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.event-card-body h3 {
   margin: 0;
   font-size: 1.2rem;
   font-weight: 800;
@@ -592,6 +641,19 @@ a { color: inherit; }
   font-weight: 700;
   font-size: 0.78rem;
   padding: 0.22rem 0.75rem;
+  border-radius: 999px;
+  margin: 0;
+  width: fit-content;
+  letter-spacing: 0.03em;
+}
+
+.event-date-badge {
+  display: inline-block;
+  background: linear-gradient(90deg, var(--secondary), var(--accent-pink));
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.78rem;
+  padding: 0.3rem 0.75rem;
   border-radius: 999px;
   margin: 0;
   width: fit-content;
@@ -648,6 +710,7 @@ a { color: inherit; }
 }
 
 .button-link {
+  margin-top: 10px;
   background: linear-gradient(135deg, var(--primary), var(--accent-pink));
   color: #fff;
   box-shadow: 0 5px 18px rgba(255, 107, 53, 0.38);
@@ -692,7 +755,12 @@ a { color: inherit; }
   align-items: end;
 }
 
+.events-filters {
+  grid-template-columns: 1fr 220px 220px auto;
+}
+
 label {
+  margin-top:10px;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
@@ -762,8 +830,7 @@ textarea:focus {
 
 .auth-page,
 .admin-page {
-  width: min(1200px, 92vw);
-  margin: 1.8rem auto 2.5rem;
+  /* width: min(1200px, 92vw); */
 }
 
 .auth-page {

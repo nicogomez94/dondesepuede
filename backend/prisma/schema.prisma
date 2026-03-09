@@ -31,3 +31,16 @@ model Business {
 
   @@map("businesses")
 }
+
+model Event {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String
+  location    String
+  startsAt    DateTime  @map("starts_at")
+  endsAt      DateTime? @map("ends_at")
+  imageUrl    String?   @map("image_url")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("events")
+}
