@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginAdmin } from "../../api/client";
+import { getDebugLoginValues } from "../../utils/debugPrefill";
 
 function AdminLoginPage() {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("admin");
-  const [password, setPassword] = useState("admin123");
+  const [username, setUsername] = useState(() => getDebugLoginValues().username);
+  const [password, setPassword] = useState(() => getDebugLoginValues().password);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 

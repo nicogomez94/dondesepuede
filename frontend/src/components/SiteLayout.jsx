@@ -47,15 +47,64 @@ function SiteLayout() {
       </main>
 
       <footer className="site-footer">
-        <div className="container">
+        <div className="container footer-grid">
+
+          {/* Marca */}
+          <div className="footer-col">
+            <Link to="/" className="footer-brand">
+              <i className="fas fa-umbrella-beach" />
+              Guia Comercial
+            </Link>
+            <p className="footer-desc">
+              Conectando vecinos y negocios de Paso de la Patria, Corrientes.
+            </p>
+          </div>
+
+          {/* Links rápidos */}
+          <div className="footer-col">
+            <h4 className="footer-heading">
+              <i className="fas fa-compass" style={{ marginRight: "0.4rem" }} />
+              Explorar
+            </h4>
+            <ul className="footer-links">
+              {navItems.map((item) => (
+                <li key={item.to}>
+                  <Link to={item.to}>
+                    <i className={`fas ${item.icon}`} style={{ marginRight: "0.4rem" }} />
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contacto */}
+          <div className="footer-col">
+            <h4 className="footer-heading">
+              <i className="fas fa-phone" style={{ marginRight: "0.4rem" }} />
+              Contacto
+            </h4>
+            <ul className="footer-links">
+              <li>
+                <i className="fas fa-location-dot" style={{ marginRight: "0.4rem" }} />
+                Dirección, Paso de la Patria
+              </li>
+              <li>
+                <i className="fas fa-envelope" style={{ marginRight: "0.4rem" }} />
+                email@ejemplo.com
+              </li>
+              <li>
+                <i className="fas fa-phone" style={{ marginRight: "0.4rem" }} />
+                +54 000 000-0000
+              </li>
+            </ul>
+          </div>
+
+        </div>
+
+        <div className="footer-bottom">
           <p>
-            <i className="fas fa-star" style={{ marginRight: "0.35rem", color: "var(--accent-yellow)" }} />
-            Camara de Comercio Local — Paso de la Patria, Corrientes
-            <i className="fas fa-star" style={{ marginLeft: "0.35rem", color: "var(--accent-yellow)" }} />
-          </p>
-          <p style={{ fontSize: "0.8rem", opacity: 0.6, marginTop: "0.4rem" }}>
-            <i className="fas fa-heart" style={{ marginRight: "0.35rem", color: "#ec4899" }} />
-            Conectando vecinos y negocios de nuestra ciudad
+            © {new Date().getFullYear()} Cámara de Comercio Local — Paso de la Patria. Todos los derechos reservados.
           </p>
         </div>
       </footer>

@@ -16,29 +16,11 @@ import {
   adminUploadImage,
   resolveImageUrl,
 } from "../../api/client";
-
-const emptyBusiness = {
-  id: null,
-  name: "",
-  description: "",
-  phone: "",
-  address: "",
-  logoUrl: "",
-  categoryId: "",
-  instagram: "",
-  facebook: "",
-  website: "",
-};
-
-const emptyEvent = {
-  id: null,
-  title: "",
-  description: "",
-  location: "",
-  startsAt: "",
-  endsAt: "",
-  imageUrl: "",
-};
+import {
+  getDebugBusinessValues,
+  getDebugCategoryValue,
+  getDebugEventValues,
+} from "../../utils/debugPrefill";
 
 function toDateTimeLocalValue(value) {
   if (!value) return "";
@@ -50,6 +32,10 @@ function toDateTimeLocalValue(value) {
   return new Date(date.getTime() - offset * 60_000).toISOString().slice(0, 16);
 }
 
+function confirmAction(action, entity) {
+  return window.confirm(`Confirmar ${action} ${entity}?`);
+}
+
 function AdminDashboardPage() {
   const navigate = useNavigate();
   const token = localStorage.getItem("adminToken");
@@ -58,10 +44,10 @@ function AdminDashboardPage() {
   const [categories, setCategories] = useState([]);
   const [businesses, setBusinesses] = useState([]);
   const [events, setEvents] = useState([]);
-  const [categoryName, setCategoryName] = useState("");
+  const [categoryName, setCategoryName] = useState(() => getDebugCategoryValue());
   const [editingCategory, setEditingCategory] = useState(null);
-  const [businessForm, setBusinessForm] = useState(emptyBusiness);
-  const [eventForm, setEventForm] = useState(emptyEvent);
+  const [businessForm, setBusinessForm] = useState(() => getDebugBusinessValues());
+  const [eventForm, setEventForm] = useState(() => getDebugEventValues());
   const [feedback, setFeedback] = useState("");
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -102,13 +88,25 @@ function AdminDashboardPage() {
     loadAdminData();
   }, [loadAdminData, navigate, token]);
 
+  useEffect(() => {
+    if (editingCategory || categoryName) return;
+    setCategoryName(getDebugCategoryValue());
+  }, [editingCategory, categoryName]);
+
+  useEffect(() => {
+    if (businessForm.id || businessForm.categoryId || categories.length === 0) return;
+    setBusinessForm((prev) => getDebugBusinessValues(String(categories[0].id || prev.categoryId)));
+  }, [businessForm.categoryId, businessForm.id, categories]);
+
   async function submitCategory(event) {
     event.preventDefault();
+    const isEditing = Boolean(editingCategory);
+    if (!confirmAction(isEditing ? "actualizar" : "crear", "categoria")) return;
     setFeedback("");
     setError("");
 
     try {
-      if (editingCategory) {
+      if (isEditing) {
         await adminUpdateCategory(token, editingCategory, { name: categoryName });
         setFeedback("Categoria actualizada.");
       } else {
@@ -116,7 +114,7 @@ function AdminDashboardPage() {
         setFeedback("Categoria creada.");
       }
 
-      setCategoryName("");
+      setCategoryName(getDebugCategoryValue());
       setEditingCategory(null);
       await loadAdminData();
     } catch (e) {
@@ -125,7 +123,7 @@ function AdminDashboardPage() {
   }
 
   async function removeCategory(id) {
-    if (!window.confirm("Eliminar categoria?")) return;
+    if (!confirmAction("eliminar", "categoria")) return;
     setFeedback("");
     setError("");
 
@@ -140,6 +138,8 @@ function AdminDashboardPage() {
 
   async function submitBusiness(event) {
     event.preventDefault();
+    const isEditing = Boolean(businessForm.id);
+    if (!confirmAction(isEditing ? "actualizar" : "crear", "comercio")) return;
     setFeedback("");
     setError("");
 
@@ -149,7 +149,7 @@ function AdminDashboardPage() {
         categoryId: Number(businessForm.categoryId),
       };
 
-      if (businessForm.id) {
+      if (isEditing) {
         await adminUpdateBusiness(token, businessForm.id, payload);
         setFeedback("Comercio actualizado.");
       } else {
@@ -157,7 +157,7 @@ function AdminDashboardPage() {
         setFeedback("Comercio creado.");
       }
 
-      setBusinessForm(emptyBusiness);
+      setBusinessForm(getDebugBusinessValues(String(categories[0]?.id || "")));
       await loadAdminData();
     } catch (e) {
       setError(e.message);
@@ -165,7 +165,7 @@ function AdminDashboardPage() {
   }
 
   async function removeBusiness(id) {
-    if (!window.confirm("Eliminar comercio?")) return;
+    if (!confirmAction("eliminar", "comercio")) return;
     setFeedback("");
     setError("");
 
@@ -180,6 +180,8 @@ function AdminDashboardPage() {
 
   async function submitEvent(event) {
     event.preventDefault();
+    const isEditing = Boolean(eventForm.id);
+    if (!confirmAction(isEditing ? "actualizar" : "crear", "evento")) return;
     setFeedback("");
     setError("");
 
@@ -190,7 +192,7 @@ function AdminDashboardPage() {
         endsAt: eventForm.endsAt || null,
       };
 
-      if (eventForm.id) {
+      if (isEditing) {
         await adminUpdateEvent(token, eventForm.id, payload);
         setFeedback("Evento actualizado.");
       } else {
@@ -198,7 +200,7 @@ function AdminDashboardPage() {
         setFeedback("Evento creado.");
       }
 
-      setEventForm(emptyEvent);
+      setEventForm(getDebugEventValues());
       await loadAdminData();
     } catch (e) {
       setError(e.message);
@@ -206,7 +208,7 @@ function AdminDashboardPage() {
   }
 
   async function removeEvent(id) {
-    if (!window.confirm("Eliminar evento?")) return;
+    if (!confirmAction("eliminar", "evento")) return;
     setFeedback("");
     setError("");
 
@@ -236,6 +238,7 @@ function AdminDashboardPage() {
   }
 
   function startEditBusiness(business) {
+    if (!confirmAction("editar", "comercio")) return;
     setBusinessForm({
       id: business.id,
       name: business.name || "",
@@ -252,6 +255,7 @@ function AdminDashboardPage() {
   }
 
   function startEditEvent(event) {
+    if (!confirmAction("editar", "evento")) return;
     setEventForm({
       id: event.id,
       title: event.title || "",
@@ -456,6 +460,7 @@ function AdminDashboardPage() {
                       type="button"
                       className="ghost-button"
                       onClick={() => {
+                        if (!confirmAction("editar", "categoria")) return;
                         setEditingCategory(category.id);
                         setCategoryName(category.name);
                       }}
