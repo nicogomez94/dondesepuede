@@ -1069,6 +1069,15 @@ textarea:focus {
   grid-template-columns: 1fr 380px;
   gap: 2rem;
   align-items: start;
+  margin: 1.5rem 0;
+}
+
+.contact-form-wrap {
+  background: linear-gradient(135deg, #fff8f0, #ffeedd);
+  border: 2.5px solid var(--line);
+  border-radius: 22px;
+  padding: 2rem 2.2rem;
+  box-shadow: 0 10px 30px rgba(255, 107, 53, 0.10);
 }
 
 .contact-form-wrap h2,
