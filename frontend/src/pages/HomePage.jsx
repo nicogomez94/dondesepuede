@@ -4,19 +4,19 @@ import { fetchBusinesses, fetchCategories } from "../api/client";
 import BusinessCard from "../components/BusinessCard";
 
 // ─── Slideshow images ───────────────────────────────────────────────────────
-// Reemplaza estas URLs con fotos reales de Bella Vista, Corrientes
+// Reemplaza estas URLs con fotos reales de Paso de la Patria, Corrientes
 const SLIDES = [
   {
     url: "https://static.wixstatic.com/media/2fd7fb_c14ebb38ad7d4a9dbbdf49799592b700~mv2.jpg/v1/fill/w_568,h_374,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/2fd7fb_c14ebb38ad7d4a9dbbdf49799592b700~mv2.jpg",
-    caption: "Costa del Rio Paraná — Bella Vista",
+    caption: "Costa del Rio Paraná — Paso de la Patria",
   },
   {
     url: "https://picsum.photos/seed/bella-vista-plaza/1400/500",
-    caption: "Plaza Principal — Bella Vista",
+    caption: "Plaza Principal — Paso de la Patria",
   },
   {
     url: "https://picsum.photos/seed/bella-vista-centro/1400/500",
-    caption: "Centro Comercial — Bella Vista",
+    caption: "Centro Comercial — Paso de la Patria",
   },
   {
     url: "https://picsum.photos/seed/bella-vista-turismo/1400/500",
@@ -24,7 +24,7 @@ const SLIDES = [
   },
   {
     url: "https://picsum.photos/seed/bella-vista-atardecer/1400/500",
-    caption: "Atardecer — Bella Vista, Corrientes",
+    caption: "Atardecer — Paso de la Patria, Corrientes",
   },
 ];
 
@@ -149,10 +149,21 @@ function HomePage() {
       <div className="hero">
         <HeroSlideshow />
 
+        {/* LOGOS PANEL */}
+        <div className="hero-logos">
+          <div className="hero-logo-wrap">
+            <img src="/logo1.png" alt="Cámara de Comercio Turismo, Industria y Producción — Paso de la Patria" />
+          </div>
+          <div className="hero-logos-divider" />
+          <div className="hero-logo-wrap">
+            <img src="/logo2.avif" alt="El Paso — Turismo Todo el Año" />
+          </div>
+        </div>
+
         <div className="hero-content">
           <p className="eyebrow">
             <i className="fas fa-location-dot" style={{ marginRight: "0.4rem" }} />
-            Bella Vista, Corrientes
+            Paso de la Patria, Corrientes
           </p>
           <h2>Conecta con los comercios de tu ciudad desde un solo lugar</h2>
           <p>
@@ -165,7 +176,7 @@ function HomePage() {
           </Link>
         </div>
 
-        <div className="stats-box">
+        {/* <div className="stats-box">
           <p>
             <i className="fas fa-layer-group" style={{ marginRight: "0.3rem" }} />
             Total categorias
@@ -176,7 +187,7 @@ function HomePage() {
             Comercios destacados
           </p>
           <strong>{businesses.length}</strong>
-        </div>
+        </div> */}
       </div>
 
       {error && <p className="error-message">{error}</p>}
@@ -219,7 +230,7 @@ function HomePage() {
       {/* BANNER */}
       <img
         src="https://i.ytimg.com/vi/rOwuH0ruxWc/maxresdefault.jpg"
-        alt="Comercios locales de Bella Vista"
+        alt="Comercios locales de Paso de la Patria"
         className="section-banner"
         loading="lazy"
       />

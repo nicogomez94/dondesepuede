@@ -3,7 +3,7 @@ function ContactPage() {
     <section className="stack-md">
       <img
         src="https://picsum.photos/seed/contact-office/1100/240"
-        alt="Contacto — Camara de Comercio Bella Vista"
+        alt="Contacto — Camara de Comercio Paso de la Patria"
         className="contact-image"
         loading="lazy"
       />
@@ -30,7 +30,7 @@ function ContactPage() {
         </p>
         <p>
           <i className="fas fa-location-dot" style={{ marginRight: "0.6rem", color: "var(--accent-pink)" }} />
-          <strong>Direccion:</strong> Calle Principal 123, Bella Vista, Corrientes
+          <strong>Direccion:</strong> Calle Principal 123, Paso de la Patria, Corrientes
         </p>
         <p>
           <i className="fas fa-clock" style={{ marginRight: "0.6rem", color: "var(--accent-teal)" }} />

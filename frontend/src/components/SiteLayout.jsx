@@ -19,7 +19,7 @@ function SiteLayout() {
             </p>
             <h1 className="brand">
               <i className="fas fa-city" style={{ marginRight: "0.4rem" }} />
-              Guia Comercial — Bella Vista
+              Guia Comercial — Paso de la Patria
             </h1>
           </div>
           <nav className="nav">
@@ -50,7 +50,7 @@ function SiteLayout() {
         <div className="container">
           <p>
             <i className="fas fa-star" style={{ marginRight: "0.35rem", color: "var(--accent-yellow)" }} />
-            Camara de Comercio Local — Bella Vista, Corrientes
+            Camara de Comercio Local — Paso de la Patria, Corrientes
             <i className="fas fa-star" style={{ marginLeft: "0.35rem", color: "var(--accent-yellow)" }} />
           </p>
           <p style={{ fontSize: "0.8rem", opacity: 0.6, marginTop: "0.4rem" }}>

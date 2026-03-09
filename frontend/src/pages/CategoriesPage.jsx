@@ -46,7 +46,7 @@ function CategoriesPage() {
     <section className="stack-md">
       <img
         src="https://picsum.photos/seed/marketplace-city/1100/220"
-        alt="Categorias de comercios — Bella Vista"
+        alt="Categorias de comercios — Paso de la Patria"
         className="section-banner"
         loading="lazy"
       />
