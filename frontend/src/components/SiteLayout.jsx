@@ -51,7 +51,7 @@ function SiteLayout() {
                 {item.label}
               </NavLink>
             ))}
-            <NavLink to="/admin/login" className="nav-link admin-link" onClick={closeMobileMenu}>
+            <NavLink to="/admin" className="nav-link admin-link" onClick={closeMobileMenu}>
               <i className="fas fa-lock" style={{ marginRight: "0.35rem" }} />
               Admin
             </NavLink>
