@@ -40,12 +40,18 @@ function EventsPage() {
 
   return (
     <section className="stack-md">
-      <img
-        src="https://picsum.photos/seed/paso-eventos/1100/220"
-        alt="Agenda de eventos en Paso de la Patria"
-        className="section-banner"
-        loading="lazy"
-      />
+      <div className="banner-wrap">
+        <img
+          src="https://picsum.photos/seed/paso-eventos/1100/220"
+          alt="Agenda de eventos en Paso de la Patria"
+          className="section-banner"
+          loading="lazy"
+        />
+        <div className="banner-overlay">
+          <h1>Eventos y actividades</h1>
+          <p>Ferias, festivales, torneos de pesca y mucho más. La agenda cultural de Paso de la Patria.</p>
+        </div>
+      </div>
       <div>
         <h2>
           <i className="fas fa-calendar-days" style={{ marginRight: "0.5rem", color: "var(--primary)" }} />

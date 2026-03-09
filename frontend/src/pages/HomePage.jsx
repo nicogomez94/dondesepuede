@@ -210,12 +210,18 @@ function HomePage() {
       </section>
 
       {/* BANNER */}
-      <img
-        src="https://i.ytimg.com/vi/rOwuH0ruxWc/maxresdefault.jpg"
-        alt="Comercios locales de Paso de la Patria"
-        className="section-banner"
-        loading="lazy"
-      />
+      <div className="banner-wrap">
+        <img
+          src="https://i.ytimg.com/vi/rOwuH0ruxWc/maxresdefault.jpg"
+          alt="Comercios locales de Paso de la Patria"
+          className="section-banner"
+          loading="lazy"
+        />
+        <div className="banner-overlay">
+          <h1>El corazón del Paraná</h1>
+          <p>Playas, pesca deportiva, gastronomía y aventura en Paso de la Patria, Corrientes.</p>
+        </div>
+      </div>
 
       {/* FEATURED BUSINESSES */}
       <section className="stack-md">

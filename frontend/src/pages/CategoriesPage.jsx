@@ -44,17 +44,23 @@ function CategoriesPage() {
 
   return (
     <section className="stack-md">
-      <img
-        src="https://picsum.photos/seed/marketplace-city/1100/220"
-        alt="Categorias de comercios — Paso de la Patria"
-        className="section-banner"
-        loading="lazy"
-      />
+      <div className="banner-wrap">
+        <img
+          src="https://picsum.photos/seed/marketplace-city/1100/220"
+          alt="Categorias de comercios — Paso de la Patria"
+          className="section-banner"
+          loading="lazy"
+        />
+        <div className="banner-overlay">
+          <h1>Rubros de nuestra ciudad</h1>
+          <p>Explorá la variedad de servicios y comercios que hacen a la vida en Paso de la Patria, Corrientes.</p>
+        </div>
+      </div>
 
       <div>
         <h2>
           <i className="fas fa-tags" style={{ marginRight: "0.5rem", color: "var(--primary)" }} />
-          Categorias comerciales
+          Categorias Destacadas
         </h2>
         <p>Descubri los rubros disponibles para encontrar lo que buscas rapido y facil.</p>
       </div>

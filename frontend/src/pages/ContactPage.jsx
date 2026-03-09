@@ -1,42 +1,184 @@
+import { useState } from "react";
+
+const EMERGENCY_NUMBERS = [
+  { icon: "fa-shield-halved", color: "#2563eb", label: "Policía",           number: "101" },
+  { icon: "fa-fire-extinguisher", color: "#dc2626", label: "Bomberos",  number: "100" },
+  { icon: "fa-truck-medical",  color: "#16a34a", label: "Ambulancia",       number: "107" },
+  { icon: "fa-house-flood-water", color: "#7c3aed", label: "Defensa Civil", number: "103" },
+  { icon: "fa-anchor",         color: "#0891b2", label: "Prefectura Naval", number: "106" },
+  { icon: "fa-building-columns", color: "#d97706", label: "Comisaría local", number: "0000-000000" },
+  { icon: "fa-hospital",       color: "#059669", label: "Hospital municipal", number: "0000-000000" },
+  { icon: "fa-map-location-dot", color: "#ea580c", label: "Turismo Corrientes", number: "0800-555-0000" },
+];
+
 function ContactPage() {
+  const [form, setForm] = useState({ nombre: "", email: "", asunto: "", mensaje: "" });
+  const [sent, setSent] = useState(false);
+
+  function handleChange(e) {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    // TODO: conectar con el backend
+    setSent(true);
+  }
+
   return (
     <section className="stack-md">
-      <img
-        src="https://picsum.photos/seed/contact-office/1100/240"
-        alt="Contacto — Camara de Comercio Paso de la Patria"
-        className="contact-image"
-        loading="lazy"
-      />
 
+      {/* BANNER */}
+      <div className="banner-wrap">
+        <img
+          src="https://picsum.photos/seed/contact-office/1100/240"
+          alt="Contacto — Camara de Comercio Paso de la Patria"
+          className="contact-image"
+          loading="lazy"
+        />
+        <div className="banner-overlay">
+          <h1>Hablemos</h1>
+          <p>La Cámara de Comercio de Paso de la Patria está para ayudarte. Sumate al directorio comercial.</p>
+        </div>
+      </div>
+
+      {/* FORMULARIO + INFO */}
+      <div className="contact-layout">
+
+        {/* FORMULARIO */}
+        <div className="contact-form-wrap">
+          <h2>
+            <i className="fas fa-envelope-open-text" style={{ marginRight: "0.5rem", color: "var(--primary)" }} />
+            Envianos un mensaje
+          </h2>
+          <p className="contact-form-desc">
+            Completá el formulario y nos ponemos en contacto a la brevedad.
+          </p>
+
+          {sent ? (
+            <div className="contact-success">
+              <i className="fas fa-circle-check" />
+              <p>¡Mensaje enviado! Nos comunicaremos pronto.</p>
+            </div>
+          ) : (
+            <form className="contact-form" onSubmit={handleSubmit}>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="nombre">Nombre</label>
+                  <input
+                    id="nombre"
+                    name="nombre"
+                    type="text"
+                    placeholder="Tu nombre completo"
+                    value={form.nombre}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="email">Email</label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="tu@email.com"
+                    value={form.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="asunto">Asunto</label>
+                <input
+                  id="asunto"
+                  name="asunto"
+                  type="text"
+                  placeholder="¿En qué podemos ayudarte?"
+                  value={form.asunto}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="mensaje">Mensaje</label>
+                <textarea
+                  id="mensaje"
+                  name="mensaje"
+                  rows={5}
+                  placeholder="Contanos más..."
+                  value={form.mensaje}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <button type="submit" className="contact-submit">
+                <i className="fas fa-paper-plane" style={{ marginRight: "0.5rem" }} />
+                Enviar mensaje
+              </button>
+            </form>
+          )}
+        </div>
+
+        {/* INFO */}
+        <div className="contact-info-wrap">
+          <h2>
+            <i className="fas fa-map-pin" style={{ marginRight: "0.5rem", color: "var(--primary)" }} />
+            Información
+          </h2>
+          <div className="contact-info-card">
+            <p>
+              <i className="fas fa-envelope" style={{ marginRight: "0.6rem", color: "var(--primary)" }} />
+              <strong>Email:</strong> contacto@camaracomercio.local
+            </p>
+            <p>
+              <i className="fas fa-phone" style={{ marginRight: "0.6rem", color: "var(--secondary)" }} />
+              <strong>Teléfono:</strong> +54 9 11 4000 0000
+            </p>
+            <p>
+              <i className="fas fa-location-dot" style={{ marginRight: "0.6rem", color: "var(--accent-pink)" }} />
+              <strong>Dirección:</strong> Calle Principal 123, Paso de la Patria, Corrientes
+            </p>
+            <p>
+              <i className="fas fa-clock" style={{ marginRight: "0.6rem", color: "var(--accent-teal)" }} />
+              <strong>Horario:</strong> Lunes a Viernes, 8:00 – 18:00
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      {/* TELÉFONOS ÚTILES */}
       <div>
         <h2>
-          <i className="fas fa-envelope-open-text" style={{ marginRight: "0.5rem", color: "var(--primary)" }} />
-          Contacto
+          <i className="fas fa-phone-volume" style={{ marginRight: "0.5rem", color: "var(--primary)" }} />
+          Teléfonos útiles
         </h2>
-        <p>
-          Si queres sumar tu comercio al directorio o actualizar informacion,
-          comunicate con la Camara de Comercio. Estamos para ayudarte.
+        <p style={{ opacity: 0.6, marginBottom: "1rem" }}>
+          Números de emergencia y servicios esenciales de la zona.
         </p>
+        <div className="emergency-grid">
+          {EMERGENCY_NUMBERS.map((item) => (
+            <a
+              key={item.label}
+              href={`tel:${item.number.replace(/\D/g, "")}`}
+              className="emergency-card"
+            >
+              <div className="emergency-icon" style={{ background: item.color + "18", color: item.color }}>
+                <i className={`fas ${item.icon}`} />
+              </div>
+              <div className="emergency-info">
+                <span className="emergency-label">{item.label}</span>
+                <span className="emergency-number">{item.number}</span>
+              </div>
+            </a>
+          ))}
+        </div>
       </div>
 
-      <div className="contact-info-card">
-        <p>
-          <i className="fas fa-envelope" style={{ marginRight: "0.6rem", color: "var(--primary)" }} />
-          <strong>Email:</strong> contacto@camaracomercio.local
-        </p>
-        <p>
-          <i className="fas fa-phone" style={{ marginRight: "0.6rem", color: "var(--secondary)" }} />
-          <strong>Telefono:</strong> +54 9 11 4000 0000
-        </p>
-        <p>
-          <i className="fas fa-location-dot" style={{ marginRight: "0.6rem", color: "var(--accent-pink)" }} />
-          <strong>Direccion:</strong> Calle Principal 123, Paso de la Patria, Corrientes
-        </p>
-        <p>
-          <i className="fas fa-clock" style={{ marginRight: "0.6rem", color: "var(--accent-teal)" }} />
-          <strong>Horario:</strong> Lunes a Viernes, 8:00 – 18:00
-        </p>
-      </div>
     </section>
   );
 }
