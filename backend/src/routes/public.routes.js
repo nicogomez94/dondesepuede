@@ -154,4 +154,19 @@ router.get("/events", async (req, res, next) => {
   }
 });
 
+router.get("/useful-phones", async (_, res, next) => {
+  try {
+    const usefulPhones = await prisma.usefulPhone.findMany({
+      orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
+    });
+
+    res.json(usefulPhones);
+  } catch (error) {
+    if (error?.code === "P2021") {
+      return res.json([]);
+    }
+    next(error);
+  }
+});
+
 module.exports = router;

@@ -95,6 +95,18 @@ async function main() {
       await prisma.event.create({ data: event });
     }
   }
+
+  const usefulPhoneCount = await prisma.usefulPhone.count();
+  if (usefulPhoneCount === 0) {
+    await prisma.usefulPhone.createMany({
+      data: [
+        { label: "Policia", number: "101", color: "#2563eb", sortOrder: 1 },
+        { label: "Bomberos", number: "100", color: "#dc2626", sortOrder: 2 },
+        { label: "Ambulancia", number: "107", color: "#16a34a", sortOrder: 3 },
+        { label: "Defensa Civil", number: "103", color: "#7c3aed", sortOrder: 4 },
+      ],
+    });
+  }
 }
 
 main()

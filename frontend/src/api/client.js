@@ -68,6 +68,10 @@ export async function fetchEvents({ search = "", month = "", status = "" } = {})
   return request(`/events${suffix}`);
 }
 
+export async function fetchUsefulPhones() {
+  return request("/useful-phones");
+}
+
 export async function loginAdmin(credentials) {
   return request("/auth/login", {
     method: "POST",
@@ -165,5 +169,32 @@ export async function adminUploadImage(token, file) {
     token,
     body: formData,
     isFormData: true,
+  });
+}
+
+export async function adminFetchUsefulPhones(token) {
+  return request("/admin/useful-phones", { token });
+}
+
+export async function adminCreateUsefulPhone(token, payload) {
+  return request("/admin/useful-phones", {
+    method: "POST",
+    token,
+    body: payload,
+  });
+}
+
+export async function adminUpdateUsefulPhone(token, id, payload) {
+  return request(`/admin/useful-phones/${id}`, {
+    method: "PUT",
+    token,
+    body: payload,
+  });
+}
+
+export async function adminDeleteUsefulPhone(token, id) {
+  return request(`/admin/useful-phones/${id}`, {
+    method: "DELETE",
+    token,
   });
 }

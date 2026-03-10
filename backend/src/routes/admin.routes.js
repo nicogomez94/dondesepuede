@@ -31,6 +31,15 @@ function parseEventPayload(body) {
   };
 }
 
+function parseUsefulPhonePayload(body) {
+  return {
+    label: body.label?.trim(),
+    number: body.number?.trim(),
+    color: body.color?.trim() || "#ff6b35",
+    sortOrder: Number(body.sortOrder ?? body.sort_order ?? 0),
+  };
+}
+
 function validateEventPayload(payload) {
   if (!payload.title || !payload.description || !payload.location || !payload.startsAt) {
     return "Titulo, descripcion, lugar y fecha de inicio son obligatorios.";
@@ -49,6 +58,27 @@ function validateEventPayload(payload) {
   }
 
   return null;
+}
+
+function validateUsefulPhonePayload(payload) {
+  if (!payload.label || !payload.number) {
+    return "Etiqueta y numero son obligatorios.";
+  }
+
+  if (Number.isNaN(payload.sortOrder)) {
+    return "El orden debe ser un numero valido.";
+  }
+
+  return null;
+}
+
+function handleUsefulPhonesTableError(error, res, next) {
+  if (error?.code === "P2021") {
+    return res.status(500).json({
+      message: "Falta aplicar migraciones de base de datos para telefonos utiles.",
+    });
+  }
+  return next(error);
 }
 
 router.get("/categories", async (_, res, next) => {
@@ -261,6 +291,74 @@ router.delete("/events/:id", async (req, res, next) => {
     return res.status(204).send();
   } catch (error) {
     return next(error);
+  }
+});
+
+router.get("/useful-phones", async (_, res, next) => {
+  try {
+    const usefulPhones = await prisma.usefulPhone.findMany({
+      orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
+    });
+
+    return res.json(usefulPhones);
+  } catch (error) {
+    return handleUsefulPhonesTableError(error, res, next);
+  }
+});
+
+router.post("/useful-phones", async (req, res, next) => {
+  try {
+    const payload = parseUsefulPhonePayload(req.body);
+    const validationError = validateUsefulPhonePayload(payload);
+
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
+    }
+
+    const usefulPhone = await prisma.usefulPhone.create({ data: payload });
+    return res.status(201).json(usefulPhone);
+  } catch (error) {
+    return handleUsefulPhonesTableError(error, res, next);
+  }
+});
+
+router.put("/useful-phones/:id", async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const payload = parseUsefulPhonePayload(req.body);
+    const validationError = validateUsefulPhonePayload(payload);
+
+    if (!id) {
+      return res.status(400).json({ message: "ID invalido." });
+    }
+
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
+    }
+
+    const usefulPhone = await prisma.usefulPhone.update({
+      where: { id },
+      data: payload,
+    });
+
+    return res.json(usefulPhone);
+  } catch (error) {
+    return handleUsefulPhonesTableError(error, res, next);
+  }
+});
+
+router.delete("/useful-phones/:id", async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+
+    if (!id) {
+      return res.status(400).json({ message: "ID invalido." });
+    }
+
+    await prisma.usefulPhone.delete({ where: { id } });
+    return res.status(204).send();
+  } catch (error) {
+    return handleUsefulPhonesTableError(error, res, next);
   }
 });
 

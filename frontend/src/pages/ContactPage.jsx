@@ -1,19 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { fetchUsefulPhones } from "../api/client";
 
-const EMERGENCY_NUMBERS = [
-  { icon: "fa-shield-halved", color: "#2563eb", label: "Policía",           number: "101" },
-  { icon: "fa-fire-extinguisher", color: "#dc2626", label: "Bomberos",  number: "100" },
-  { icon: "fa-truck-medical",  color: "#16a34a", label: "Ambulancia",       number: "107" },
-  { icon: "fa-house-flood-water", color: "#7c3aed", label: "Defensa Civil", number: "103" },
-  { icon: "fa-anchor",         color: "#0891b2", label: "Prefectura Naval", number: "106" },
-  { icon: "fa-building-columns", color: "#d97706", label: "Comisaría local", number: "0000-000000" },
-  { icon: "fa-hospital",       color: "#059669", label: "Hospital municipal", number: "0000-000000" },
-  { icon: "fa-map-location-dot", color: "#ea580c", label: "Turismo Corrientes", number: "0800-555-0000" },
+const FALLBACK_EMERGENCY_NUMBERS = [
+  { color: "#2563eb", label: "Policía", number: "101" },
+  { color: "#dc2626", label: "Bomberos", number: "100" },
+  { color: "#16a34a", label: "Ambulancia", number: "107" },
+  { color: "#7c3aed", label: "Defensa Civil", number: "103" },
+  { color: "#0891b2", label: "Prefectura Naval", number: "106" },
+  { color: "#d97706", label: "Comisaría local", number: "0000-000000" },
+  { color: "#059669", label: "Hospital municipal", number: "0000-000000" },
+  { color: "#ea580c", label: "Turismo Corrientes", number: "0800-555-0000" },
 ];
 
 function ContactPage() {
   const [form, setForm] = useState({ nombre: "", email: "", asunto: "", mensaje: "" });
   const [sent, setSent] = useState(false);
+  const [usefulPhones, setUsefulPhones] = useState(FALLBACK_EMERGENCY_NUMBERS);
 
   function handleChange(e) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -24,6 +26,27 @@ function ContactPage() {
     // TODO: conectar con el backend
     setSent(true);
   }
+
+  useEffect(() => {
+    let ignore = false;
+
+    async function loadUsefulPhones() {
+      try {
+        const data = await fetchUsefulPhones();
+        if (ignore || !Array.isArray(data) || data.length === 0) return;
+        setUsefulPhones(data);
+      } catch {
+        if (!ignore) {
+          setUsefulPhones(FALLBACK_EMERGENCY_NUMBERS);
+        }
+      }
+    }
+
+    loadUsefulPhones();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   return (
     <section className="stack-md">
@@ -161,17 +184,15 @@ function ContactPage() {
           Números de emergencia y servicios esenciales de la zona.
         </p>
         <div className="emergency-grid">
-          {EMERGENCY_NUMBERS.map((item) => (
+          {usefulPhones.map((item) => (
             <a
-              key={item.label}
+              key={item.id || item.label}
               href={`tel:${item.number.replace(/\D/g, "")}`}
               className="emergency-card"
+              style={{ borderLeft: `6px solid ${item.color || "var(--primary)"}` }}
             >
-              <div className="emergency-icon" style={{ background: item.color + "18", color: item.color }}>
-                <i className={`fas ${item.icon}`} />
-              </div>
               <div className="emergency-info">
-                <span className="emergency-label">{item.label}</span>
+                <span className="emergency-label" style={{ color: item.color || "#5a3020" }}>{item.label}</span>
                 <span className="emergency-number">{item.number}</span>
               </div>
             </a>

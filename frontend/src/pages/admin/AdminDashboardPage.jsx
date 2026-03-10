@@ -1,15 +1,19 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
+  adminCreateUsefulPhone,
   adminCreateBusiness,
   adminCreateCategory,
   adminCreateEvent,
+  adminDeleteUsefulPhone,
   adminDeleteBusiness,
   adminDeleteCategory,
   adminDeleteEvent,
+  adminFetchUsefulPhones,
   adminFetchBusinesses,
   adminFetchCategories,
   adminFetchEvents,
+  adminUpdateUsefulPhone,
   adminUpdateBusiness,
   adminUpdateCategory,
   adminUpdateEvent,
@@ -42,8 +46,16 @@ function AdminDashboardPage() {
   const [categories, setCategories] = useState([]);
   const [businesses, setBusinesses] = useState([]);
   const [events, setEvents] = useState([]);
+  const [usefulPhones, setUsefulPhones] = useState([]);
   const [categoryName, setCategoryName] = useState(() => getDebugCategoryValue());
   const [editingCategory, setEditingCategory] = useState(null);
+  const [usefulPhoneForm, setUsefulPhoneForm] = useState({
+    id: null,
+    label: "",
+    number: "",
+    color: "#ff6b35",
+    sortOrder: 0,
+  });
   const [businessForm, setBusinessForm] = useState(() => getDebugBusinessValues());
   const [eventForm, setEventForm] = useState(() => getDebugEventValues());
   const [feedback, setFeedback] = useState("");
@@ -61,14 +73,16 @@ function AdminDashboardPage() {
   const loadAdminData = useCallback(async () => {
     try {
       setError("");
-      const [categoriesData, businessesData, eventsData] = await Promise.all([
+      const [categoriesData, businessesData, eventsData, usefulPhonesData] = await Promise.all([
         adminFetchCategories(token),
         adminFetchBusinesses(token),
         adminFetchEvents(token),
+        adminFetchUsefulPhones(token),
       ]);
       setCategories(categoriesData);
       setBusinesses(businessesData);
       setEvents(eventsData);
+      setUsefulPhones(usefulPhonesData);
     } catch (e) {
       if (e.message.toLowerCase().includes("token")) {
         localStorage.removeItem("adminToken");
@@ -279,6 +293,69 @@ function AdminDashboardPage() {
     setFormOpen(true);
   }
 
+  function startEditUsefulPhone(usefulPhone) {
+    setUsefulPhoneForm({
+      id: usefulPhone.id,
+      label: usefulPhone.label || "",
+      number: usefulPhone.number || "",
+      color: usefulPhone.color || "#ff6b35",
+      sortOrder: usefulPhone.sortOrder || 0,
+    });
+    setFormOpen(true);
+  }
+
+  function startNewUsefulPhone() {
+    const maxSortOrder = usefulPhones.reduce((max, item) => Math.max(max, item.sortOrder || 0), 0);
+    setUsefulPhoneForm({
+      id: null,
+      label: "",
+      number: "",
+      color: "#ff6b35",
+      sortOrder: maxSortOrder + 1,
+    });
+    setFormOpen(true);
+  }
+
+  async function submitUsefulPhone(event) {
+    event.preventDefault();
+    const isEditing = Boolean(usefulPhoneForm.id);
+    if (!confirmAction(isEditing ? "actualizar" : "crear", "telefono util")) return;
+    setFeedback("");
+    setError("");
+    try {
+      const payload = {
+        label: usefulPhoneForm.label,
+        number: usefulPhoneForm.number,
+        color: usefulPhoneForm.color,
+        sortOrder: Number(usefulPhoneForm.sortOrder || 0),
+      };
+      if (isEditing) {
+        await adminUpdateUsefulPhone(token, usefulPhoneForm.id, payload);
+        setFeedback("Telefono util actualizado.");
+      } else {
+        await adminCreateUsefulPhone(token, payload);
+        setFeedback("Telefono util creado.");
+      }
+      closeModal();
+      await loadAdminData();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  async function removeUsefulPhone(id) {
+    if (!confirmAction("eliminar", "telefono util")) return;
+    setFeedback("");
+    setError("");
+    try {
+      await adminDeleteUsefulPhone(token, id);
+      setFeedback("Telefono util eliminado.");
+      await loadAdminData();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
   function logout() {
     localStorage.removeItem("adminToken");
     navigate("/admin/login");
@@ -309,6 +386,13 @@ function AdminDashboardPage() {
             onClick={() => { setTab("categories"); setFormOpen(false); }}
           >
             Categorias
+          </button>
+          <button
+            type="button"
+            className={tab === "usefulPhones" ? "button-link" : "ghost-button"}
+            onClick={() => { setTab("usefulPhones"); setFormOpen(false); }}
+          >
+            Telefonos utiles
           </button>
           <button type="button" className="ghost-button" onClick={logout}>
             Cerrar sesion
@@ -394,6 +478,37 @@ function AdminDashboardPage() {
                     Editar
                   </button>
                   <button type="button" className="danger-button" onClick={() => removeCategory(category.id)}>
+                    Eliminar
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* ── TELEFONOS UTILES ── */}
+      {tab === "usefulPhones" && (
+        <div className="list-card" style={{ marginTop: "1rem" }}>
+          <div className="list-card-header">
+            <h2>Telefonos utiles</h2>
+            <button type="button" className="button-link" onClick={startNewUsefulPhone}>
+              <i className="fas fa-plus" style={{ marginRight: "0.4rem" }} />
+              Nuevo telefono
+            </button>
+          </div>
+          <ul className="admin-list">
+            {usefulPhones.map((usefulPhone) => (
+              <li key={usefulPhone.id}>
+                <span>
+                  {usefulPhone.label} - {usefulPhone.number}
+                  <small className="admin-list-meta"> Orden: {usefulPhone.sortOrder || 0}</small>
+                </span>
+                <div>
+                  <button type="button" className="ghost-button" onClick={() => startEditUsefulPhone(usefulPhone)}>
+                    Editar
+                  </button>
+                  <button type="button" className="danger-button" onClick={() => removeUsefulPhone(usefulPhone.id)}>
                     Eliminar
                   </button>
                 </div>
@@ -608,6 +723,51 @@ function AdminDashboardPage() {
                   <button type="button" className="ghost-button" onClick={closeModal}>Cancelar</button>
                   <button type="submit" className="button-link">
                     {editingCategory ? "Actualizar" : "Crear"}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* Formulario telefono util */}
+            {tab === "usefulPhones" && (
+              <form className="form-card modal-form" onSubmit={submitUsefulPhone}>
+                <h2>{usefulPhoneForm.id ? "Editar telefono util" : "Nuevo telefono util"}</h2>
+                <label>
+                  Etiqueta
+                  <input
+                    value={usefulPhoneForm.label}
+                    onChange={(e) => setUsefulPhoneForm((prev) => ({ ...prev, label: e.target.value }))}
+                    required
+                  />
+                </label>
+                <label>
+                  Numero
+                  <input
+                    value={usefulPhoneForm.number}
+                    onChange={(e) => setUsefulPhoneForm((prev) => ({ ...prev, number: e.target.value }))}
+                    required
+                  />
+                </label>
+                <label>
+                  Color
+                  <input
+                    type="color"
+                    value={usefulPhoneForm.color}
+                    onChange={(e) => setUsefulPhoneForm((prev) => ({ ...prev, color: e.target.value }))}
+                  />
+                </label>
+                <label>
+                  Orden
+                  <input
+                    type="number"
+                    value={usefulPhoneForm.sortOrder}
+                    onChange={(e) => setUsefulPhoneForm((prev) => ({ ...prev, sortOrder: e.target.value }))}
+                  />
+                </label>
+                <div className="modal-form-actions">
+                  <button type="button" className="ghost-button" onClick={closeModal}>Cancelar</button>
+                  <button type="submit" className="button-link">
+                    {usefulPhoneForm.id ? "Actualizar" : "Crear"}
                   </button>
                 </div>
               </form>

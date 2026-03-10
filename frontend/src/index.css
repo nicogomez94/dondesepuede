@@ -982,6 +982,12 @@ textarea:focus {
   gap: 0.4rem;
 }
 
+.admin-list-meta {
+  margin-left: 0.45rem;
+  opacity: 0.6;
+  font-weight: 500;
+}
+
 .list-card-header {
   display: flex;
   justify-content: space-between;
