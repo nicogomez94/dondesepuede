@@ -1,7 +1,7 @@
 services:
   # Backend API (Node.js + Express + Prisma)
   - type: web
-    name: emilio-backend
+    name: emilio-backend-shared-db
     runtime: node
     region: oregon
     plan: free
@@ -13,34 +13,27 @@ services:
       - key: PORT
         value: 4000
       - key: DATABASE_URL
-        fromDatabase:
-          name: emilio-db
-          property: connectionString
+        sync: false
       - key: JWT_SECRET
         generateValue: true
+      - key: ADMIN_USERNAME
+        value: admin
       - key: ADMIN_PASSWORD
-        generateValue: true
+        value: admin123
     healthCheckPath: /api/health
     autoDeploy: true
 
   # Frontend (React + Vite)
   - type: web
-    name: emilio-frontend
+    name: emilio-frontend-shared-db
     runtime: static
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: ./frontend/dist
     envVars:
       - key: VITE_API_URL
-        value: https://emilio-backend.onrender.com/api
+        value: https://emilio-backend-shared-db.onrender.com/api
     routes:
       - type: rewrite
         source: /*
         destination: /index.html
     autoDeploy: true
-
-databases:
-  # PostgreSQL Database
-  - name: emilio-db
-    databaseName: emilio
-    plan: free
-    region: oregon
