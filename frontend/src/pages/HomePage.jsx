@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchBusinesses, fetchCategories, fetchEvents } from "../api/client";
+import { fetchBusinesses, fetchCategories, fetchEvents, fetchUsefulPhones } from "../api/client";
 import BusinessCard from "../components/BusinessCard";
 import EventCard from "../components/EventCard";
 
@@ -31,14 +31,11 @@ const SLIDES = [
 
 const INTERVAL_MS = 4500;
 
-const EMERGENCY_NUMBERS = [
-  { icon: "fa-shield-halved", color: "#2563eb", label: "Policia", number: "101" },
-  { icon: "fa-fire-extinguisher", color: "#dc2626", label: "Bomberos", number: "100" },
-  { icon: "fa-truck-medical", color: "#16a34a", label: "Ambulancia", number: "107" },
-  { icon: "fa-house-flood-water", color: "#7c3aed", label: "Defensa Civil", number: "103" },
-  { icon: "fa-anchor", color: "#0891b2", label: "Prefectura Naval", number: "106" },
-  { icon: "fa-building-columns", color: "#d97706", label: "Comisaria local", number: "0000-000000" },
-  { icon: "fa-hospital", color: "#059669", label: "Hospital municipal", number: "0000-000000" },
+const FALLBACK_EMERGENCY_NUMBERS = [
+  { color: "#2563eb", label: "Policia", number: "101" },
+  { color: "#dc2626", label: "Bomberos", number: "100" },
+  { color: "#16a34a", label: "Ambulancia", number: "107" },
+  { color: "#7c3aed", label: "Defensa Civil", number: "103" },
 ];
 
 // ─── Category meta ───────────────────────────────────────────────────────────
@@ -118,6 +115,7 @@ function HomePage() {
   const [categories, setCategories] = useState([]);
   const [businesses, setBusinesses] = useState([]);
   const [events, setEvents] = useState([]);
+  const [usefulPhones, setUsefulPhones] = useState(FALLBACK_EMERGENCY_NUMBERS);
   const [error, setError] = useState("");
   const [contactForm, setContactForm] = useState({ nombre: "", email: "", asunto: "", mensaje: "" });
   const [contactSent, setContactSent] = useState(false);
@@ -125,14 +123,18 @@ function HomePage() {
   useEffect(() => {
     async function loadData() {
       try {
-        const [categoriesData, businessesData, eventsData] = await Promise.all([
+        const [categoriesData, businessesData, eventsData, usefulPhonesData] = await Promise.all([
           fetchCategories(),
           fetchBusinesses(),
           fetchEvents({ status: "upcoming" }),
+          fetchUsefulPhones(),
         ]);
         setCategories(categoriesData);
         setBusinesses(businessesData.slice(0, 3));
         setEvents(eventsData.slice(0, 3));
+        if (Array.isArray(usefulPhonesData) && usefulPhonesData.length > 0) {
+          setUsefulPhones(usefulPhonesData);
+        }
       } catch (e) {
         setError(e.message);
       }
@@ -378,17 +380,15 @@ function HomePage() {
               Numeros de emergencia y servicios esenciales de la zona.
             </p>
             <div className="emergency-grid">
-              {EMERGENCY_NUMBERS.map((item) => (
+              {usefulPhones.map((item) => (
                 <a
-                  key={item.label}
+                  key={item.id || item.label}
                   href={`tel:${item.number.replace(/\D/g, "")}`}
                   className="emergency-card"
+                  style={{ borderLeft: `6px solid ${item.color || "var(--primary)"}` }}
                 >
-                  <div className="emergency-icon" style={{ background: item.color + "18", color: item.color }}>
-                    <i className={`fas ${item.icon}`} />
-                  </div>
                   <div className="emergency-info">
-                    <span className="emergency-label">{item.label}</span>
+                    <span className="emergency-label" style={{ color: item.color || "#5a3020" }}>{item.label}</span>
                     <span className="emergency-number">{item.number}</span>
                   </div>
                 </a>
