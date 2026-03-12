@@ -613,6 +613,13 @@ a { color: inherit; }
   display: block;
 }
 
+.simple-card-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+}
+
 .simple-card-body {
   padding: 1rem 1.1rem 1.2rem;
 }

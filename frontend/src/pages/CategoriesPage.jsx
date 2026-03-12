@@ -81,12 +81,21 @@ function CategoriesPage() {
               className="simple-card"
               style={{ borderTopColor: meta.color, borderTopWidth: 4 }}
             >
-              <img
-                src={categoryImage ? resolveImageUrl(categoryImage) : `https://picsum.photos/seed/${meta.seed}/400/150`}
-                alt={category.name}
-                className="simple-card-image"
-                loading="lazy"
-              />
+              {categoryImage ? (
+                <img
+                  src={resolveImageUrl(categoryImage)}
+                  alt={category.name}
+                  className="simple-card-image"
+                  loading="lazy"
+                />
+              ) : (
+                <div
+                  className="simple-card-image simple-card-placeholder"
+                  style={{ background: `linear-gradient(135deg, ${meta.color}22, ${meta.color}55)` }}
+                >
+                  <i className={`fas ${meta.icon}`} style={{ color: meta.color }} />
+                </div>
+              )}
               <div className="simple-card-body">
                 <i
                   className={`fas ${meta.icon} card-icon`}
