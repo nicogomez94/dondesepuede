@@ -38,6 +38,19 @@ function confirmAction(action, entity) {
   return window.confirm(`Confirmar ${action} ${entity}?`);
 }
 
+const USEFUL_PHONE_COLOR_OPTIONS = [
+  { value: "#2563eb", label: "Azul" },
+  { value: "#dc2626", label: "Rojo" },
+  { value: "#16a34a", label: "Verde" },
+  { value: "#7c3aed", label: "Violeta" },
+  { value: "#0891b2", label: "Cian" },
+  { value: "#d97706", label: "Naranja" },
+  { value: "#059669", label: "Esmeralda" },
+  { value: "#ea580c", label: "Naranja oscuro" },
+  { value: "#ff6b35", label: "Coral" },
+  { value: "#475569", label: "Gris pizarra" },
+];
+
 function AdminDashboardPage() {
   const navigate = useNavigate();
   const token = localStorage.getItem("adminToken");
@@ -799,11 +812,19 @@ function AdminDashboardPage() {
                 </label>
                 <label>
                   Color
-                  <input
-                    type="color"
+                  <select
                     value={usefulPhoneForm.color}
                     onChange={(e) => setUsefulPhoneForm((prev) => ({ ...prev, color: e.target.value }))}
-                  />
+                  >
+                    {!USEFUL_PHONE_COLOR_OPTIONS.some((option) => option.value === usefulPhoneForm.color) && (
+                      <option value={usefulPhoneForm.color}>Color actual ({usefulPhoneForm.color})</option>
+                    )}
+                    {USEFUL_PHONE_COLOR_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
                 </label>
                 <label>
                   Orden
