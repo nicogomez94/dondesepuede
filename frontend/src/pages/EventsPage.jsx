@@ -42,7 +42,7 @@ function EventsPage() {
     <section className="stack-md">
       <div className="banner-wrap">
         <img
-          src="https://picsum.photos/seed/paso-eventos/1100/220"
+          src="/eventos.jpg"
           alt="Agenda de eventos en Paso de la Patria"
           className="section-banner"
           loading="lazy"

@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchBusinesses, fetchCategories, fetchEvents, fetchUsefulPhones } from "../api/client";
+import {
+  fetchBusinesses,
+  fetchCategories,
+  fetchEvents,
+  fetchUsefulPhones,
+  resolveImageUrl,
+} from "../api/client";
 import BusinessCard from "../components/BusinessCard";
 import EventCard from "../components/EventCard";
 
@@ -64,34 +70,19 @@ function getCategoryMeta(name, fallbackIndex) {
   return CATEGORY_META[normalize(name)] || FALLBACK_META[fallbackIndex % FALLBACK_META.length];
 }
 
+function getCategoryImageUrl(category) {
+  return category?.imageUrl || category?.image_url || "";
+}
+
 // ─── Hero Slideshow ──────────────────────────────────────────────────────────
 function HeroSlideshow() {
   const [current, setCurrent] = useState(0);
   const timerRef = useRef(null);
 
-  const goTo = (index) => {
-    setCurrent((index + SLIDES.length) % SLIDES.length);
-  };
-
-  const resetTimer = () => {
-    clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => setCurrent((c) => (c + 1) % SLIDES.length), INTERVAL_MS);
-  };
-
   useEffect(() => {
     timerRef.current = setInterval(() => setCurrent((c) => (c + 1) % SLIDES.length), INTERVAL_MS);
     return () => clearInterval(timerRef.current);
   }, []);
-
-  const handleArrow = (dir) => {
-    goTo(current + dir);
-    resetTimer();
-  };
-
-  const handleDot = (i) => {
-    goTo(i);
-    resetTimer();
-  };
 
   return (
     <div className="hero-slideshow">
@@ -211,6 +202,7 @@ function HomePage() {
         <div className="category-grid">
           {categories.map((category, i) => {
             const meta = getCategoryMeta(category.name, i);
+            const categoryImage = getCategoryImageUrl(category);
             return (
               <article
                 key={category.id}
@@ -218,7 +210,7 @@ function HomePage() {
                 style={{ borderTopColor: meta.color, borderTopWidth: 4 }}
               >
                 <img
-                  src={`https://picsum.photos/seed/${meta.seed}/400/150`}
+                  src={categoryImage ? resolveImageUrl(categoryImage) : `https://picsum.photos/seed/${meta.seed}/400/150`}
                   alt={category.name}
                   className="simple-card-image"
                   loading="lazy"
@@ -240,7 +232,7 @@ function HomePage() {
       {/* BANNER */}
       <div className="banner-wrap">
         <img
-          src="https://i.ytimg.com/vi/rOwuH0ruxWc/maxresdefault.jpg"
+          src="/570.jpg"
           alt="Comercios locales de Paso de la Patria"
           className="section-banner"
           loading="lazy"

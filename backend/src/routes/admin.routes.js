@@ -40,6 +40,13 @@ function parseUsefulPhonePayload(body) {
   };
 }
 
+function parseCategoryPayload(body) {
+  return {
+    name: body.name?.trim(),
+    imageUrl: body.imageUrl?.trim() || body.image_url?.trim() || null,
+  };
+}
+
 function validateEventPayload(payload) {
   if (!payload.title || !payload.description || !payload.location || !payload.startsAt) {
     return "Titulo, descripcion, lugar y fecha de inicio son obligatorios.";
@@ -81,6 +88,22 @@ function handleUsefulPhonesTableError(error, res, next) {
   return next(error);
 }
 
+function handleCategorySchemaError(error, res, next) {
+  if (error?.code === "P2021" || error?.code === "P2022") {
+    return res.status(500).json({
+      message: "Falta actualizar la base para imagenes de categoria. Ejecuta migraciones y reinicia backend.",
+    });
+  }
+
+  if (typeof error?.message === "string" && error.message.includes("Unknown argument `imageUrl`")) {
+    return res.status(500).json({
+      message: "Prisma Client desactualizado. Ejecuta `npx prisma generate` y reinicia backend.",
+    });
+  }
+
+  return next(error);
+}
+
 router.get("/categories", async (_, res, next) => {
   try {
     const categories = await prisma.category.findMany({
@@ -100,36 +123,36 @@ router.get("/categories", async (_, res, next) => {
 
 router.post("/categories", async (req, res, next) => {
   try {
-    const name = req.body.name?.trim();
+    const payload = parseCategoryPayload(req.body);
 
-    if (!name) {
+    if (!payload.name) {
       return res.status(400).json({ message: "El nombre es obligatorio." });
     }
 
-    const category = await prisma.category.create({ data: { name } });
+    const category = await prisma.category.create({ data: payload });
     return res.status(201).json(category);
   } catch (error) {
-    return next(error);
+    return handleCategorySchemaError(error, res, next);
   }
 });
 
 router.put("/categories/:id", async (req, res, next) => {
   try {
     const id = Number(req.params.id);
-    const name = req.body.name?.trim();
+    const payload = parseCategoryPayload(req.body);
 
-    if (!id || !name) {
+    if (!id || !payload.name) {
       return res.status(400).json({ message: "Datos invalidos." });
     }
 
     const category = await prisma.category.update({
       where: { id },
-      data: { name },
+      data: payload,
     });
 
     return res.json(category);
   } catch (error) {
-    return next(error);
+    return handleCategorySchemaError(error, res, next);
   }
 });
 

@@ -54,7 +54,7 @@ function ContactPage() {
       {/* BANNER */}
       <div className="banner-wrap">
         <img
-          src="https://picsum.photos/seed/contact-office/1100/240"
+          src="contacto.png"
           alt="Contacto — Camara de Comercio Paso de la Patria"
           className="contact-image"
           loading="lazy"

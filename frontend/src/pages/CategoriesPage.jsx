@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchCategories } from "../api/client";
+import { fetchCategories, resolveImageUrl } from "../api/client";
 
 const CATEGORY_META = {
   gastronomia:  { icon: "fa-utensils",         seed: "food-restaurant", color: "#ff6b35" },
@@ -27,6 +27,10 @@ function getCategoryMeta(name, fallbackIndex) {
   return CATEGORY_META[normalize(name)] || FALLBACK_META[fallbackIndex % FALLBACK_META.length];
 }
 
+function getCategoryImageUrl(category) {
+  return category?.imageUrl || category?.image_url || "";
+}
+
 function CategoriesPage() {
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState("");
@@ -46,7 +50,7 @@ function CategoriesPage() {
     <section className="stack-md">
       <div className="banner-wrap">
         <img
-          src="https://picsum.photos/seed/marketplace-city/1100/220"
+          src="/otro.jpg"
           alt="Categorias de comercios — Paso de la Patria"
           className="section-banner"
           loading="lazy"
@@ -70,6 +74,7 @@ function CategoriesPage() {
       <div className="category-grid">
         {categories.map((category, i) => {
           const meta = getCategoryMeta(category.name, i);
+          const categoryImage = getCategoryImageUrl(category);
           return (
             <article
               key={category.id}
@@ -77,7 +82,7 @@ function CategoriesPage() {
               style={{ borderTopColor: meta.color, borderTopWidth: 4 }}
             >
               <img
-                src={`https://picsum.photos/seed/${meta.seed}/400/150`}
+                src={categoryImage ? resolveImageUrl(categoryImage) : `https://picsum.photos/seed/${meta.seed}/400/150`}
                 alt={category.name}
                 className="simple-card-image"
                 loading="lazy"

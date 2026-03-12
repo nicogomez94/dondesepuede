@@ -48,6 +48,7 @@ function AdminDashboardPage() {
   const [events, setEvents] = useState([]);
   const [usefulPhones, setUsefulPhones] = useState([]);
   const [categoryName, setCategoryName] = useState(() => getDebugCategoryValue());
+  const [categoryImageUrl, setCategoryImageUrl] = useState("");
   const [editingCategory, setEditingCategory] = useState(null);
   const [usefulPhoneForm, setUsefulPhoneForm] = useState({
     id: null,
@@ -102,9 +103,9 @@ function AdminDashboardPage() {
   }, [loadAdminData, navigate, token]);
 
   useEffect(() => {
-    if (editingCategory || categoryName) return;
+    if (editingCategory || categoryName || categoryImageUrl) return;
     setCategoryName(getDebugCategoryValue());
-  }, [editingCategory, categoryName]);
+  }, [editingCategory, categoryImageUrl, categoryName]);
 
   useEffect(() => {
     if (businessForm.id || businessForm.categoryId || categories.length === 0) return;
@@ -122,14 +123,19 @@ function AdminDashboardPage() {
     setFeedback("");
     setError("");
     try {
+      const payload = {
+        name: categoryName,
+        imageUrl: categoryImageUrl,
+      };
       if (isEditing) {
-        await adminUpdateCategory(token, editingCategory, { name: categoryName });
+        await adminUpdateCategory(token, editingCategory, payload);
         setFeedback("Categoria actualizada.");
       } else {
-        await adminCreateCategory(token, { name: categoryName });
+        await adminCreateCategory(token, payload);
         setFeedback("Categoria creada.");
       }
       setCategoryName(getDebugCategoryValue());
+      setCategoryImageUrl("");
       setEditingCategory(null);
       closeModal();
       await loadAdminData();
@@ -242,6 +248,21 @@ function AdminDashboardPage() {
     }
   }
 
+  async function uploadCategoryImage(file) {
+    setUploading(true);
+    setError("");
+    setFeedback("");
+    try {
+      const response = await adminUploadImage(token, file);
+      setCategoryImageUrl(response.url);
+      setFeedback("Imagen subida correctamente.");
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setUploading(false);
+    }
+  }
+
   function startEditBusiness(business) {
     setBusinessForm({
       id: business.id,
@@ -284,12 +305,14 @@ function AdminDashboardPage() {
   function startEditCategory(category) {
     setEditingCategory(category.id);
     setCategoryName(category.name);
+    setCategoryImageUrl(category.imageUrl || category.image_url || "");
     setFormOpen(true);
   }
 
   function startNewCategory() {
     setEditingCategory(null);
     setCategoryName(getDebugCategoryValue());
+    setCategoryImageUrl("");
     setFormOpen(true);
   }
 
@@ -400,8 +423,8 @@ function AdminDashboardPage() {
         </div>
       </header>
 
-      {feedback && <p className="ok-message">{feedback}</p>}
-      {error && <p className="error-message">{error}</p>}
+      {!formOpen && feedback && <p className="ok-message">{feedback}</p>}
+      {!formOpen && error && <p className="error-message">{error}</p>}
 
       {/* ── COMERCIOS ── */}
       {tab === "businesses" && (
@@ -525,6 +548,8 @@ function AdminDashboardPage() {
             <button type="button" className="modal-close" onClick={closeModal} aria-label="Cerrar">
               <i className="fas fa-xmark" />
             </button>
+            {feedback && <p className="ok-message">{feedback}</p>}
+            {error && <p className="error-message">{error}</p>}
 
             {/* Formulario comercio */}
             {tab === "businesses" && (
@@ -719,6 +744,30 @@ function AdminDashboardPage() {
                     required
                   />
                 </label>
+                <label>
+                  Imagen (URL)
+                  <input
+                    value={categoryImageUrl}
+                    onChange={(e) => setCategoryImageUrl(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Subir imagen
+                  <input
+                    type="file"
+                    accept="image/*"
+                    disabled={uploading}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      await uploadCategoryImage(file);
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+                {categoryImageUrl && (
+                  <img src={resolveImageUrl(categoryImageUrl)} alt="Preview de categoria" className="preview-image" />
+                )}
                 <div className="modal-form-actions">
                   <button type="button" className="ghost-button" onClick={closeModal}>Cancelar</button>
                   <button type="submit" className="button-link">
