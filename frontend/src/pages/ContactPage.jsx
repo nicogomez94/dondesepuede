@@ -10,20 +10,45 @@ const FALLBACK_EMERGENCY_NUMBERS = [
   { color: "#d97706", label: "Comisaría local", number: "0000-000000" },
   { color: "#059669", label: "Hospital municipal", number: "0000-000000" },
 ];
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/mpqyykvp";
 
 function ContactPage() {
   const [form, setForm] = useState({ nombre: "", email: "", asunto: "", mensaje: "" });
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const [usefulPhones, setUsefulPhones] = useState(FALLBACK_EMERGENCY_NUMBERS);
 
   function handleChange(e) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    // TODO: conectar con el backend
-    setSent(true);
+    setSubmitError("");
+    setSubmitting(true);
+
+    try {
+      const response = await fetch(FORMSPREE_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      if (!response.ok) {
+        throw new Error("Formspree respondió con error");
+      }
+
+      setSent(true);
+      setForm({ nombre: "", email: "", asunto: "", mensaje: "" });
+    } catch {
+      setSubmitError("No se pudo enviar el mensaje. Intentá nuevamente.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   useEffect(() => {
@@ -136,10 +161,11 @@ function ContactPage() {
                   required
                 />
               </div>
+              {submitError ? <p style={{ color: "#b91c1c", marginBottom: "0.75rem" }}>{submitError}</p> : null}
 
-              <button type="submit" className="contact-submit">
+              <button type="submit" className="contact-submit" disabled={submitting}>
                 <i className="fas fa-paper-plane" style={{ marginRight: "0.5rem" }} />
-                Enviar mensaje
+                {submitting ? "Enviando..." : "Enviar mensaje"}
               </button>
             </form>
           )}
