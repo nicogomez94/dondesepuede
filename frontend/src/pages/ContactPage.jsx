@@ -155,15 +155,15 @@ function ContactPage() {
           <div className="contact-info-card">
             <p>
               <i className="fas fa-envelope" style={{ marginRight: "0.6rem", color: "var(--primary)" }} />
-              <strong>Email:</strong> contacto@camaracomercio.local
+              <strong>Email:</strong> camaracomerciopasodelapatria@gmail.com
             </p>
             <p>
               <i className="fas fa-phone" style={{ marginRight: "0.6rem", color: "var(--secondary)" }} />
-              <strong>Teléfono:</strong> +54 9 11 4000 0000
+              <strong>Teléfono:</strong> +54 9 3794 57-0621
             </p>
             <p>
               <i className="fas fa-location-dot" style={{ marginRight: "0.6rem", color: "var(--accent-pink)" }} />
-              <strong>Dirección:</strong> Calle Principal 123, Paso de la Patria, Corrientes
+              <strong>Dirección:</strong> Rioja 1150, Paso de la Patria, W3409
             </p>
             <p>
               <i className="fas fa-clock" style={{ marginRight: "0.6rem", color: "var(--accent-teal)" }} />
