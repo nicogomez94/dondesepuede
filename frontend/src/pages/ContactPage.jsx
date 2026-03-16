@@ -9,7 +9,6 @@ const FALLBACK_EMERGENCY_NUMBERS = [
   { color: "#0891b2", label: "Prefectura Naval", number: "106" },
   { color: "#d97706", label: "Comisaría local", number: "0000-000000" },
   { color: "#059669", label: "Hospital municipal", number: "0000-000000" },
-  { color: "#ea580c", label: "Turismo Corrientes", number: "0800-555-0000" },
 ];
 
 function ContactPage() {

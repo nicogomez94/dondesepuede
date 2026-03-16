@@ -27,7 +27,7 @@ const SLIDES = [
   },
   {
     url: "https://picsum.photos/seed/bella-vista-turismo/1400/500",
-    caption: "Turismo Local — Corrientes",
+    caption: "Turismo Local — Paso de la Patria",
   },
   {
     url: "https://picsum.photos/seed/bella-vista-atardecer/1400/500",
