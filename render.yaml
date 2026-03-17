@@ -13,7 +13,7 @@ services:
       - key: PORT
         value: 4000
       - key: DATABASE_URL
-        sync: false
+        value: postgresql://basefree_user:5qKWDSyE5T9svRX1BwlRUabLM7IcU5L9@dpg-d6sqp1ia214c73c704qg-a/basefree
       - key: JWT_SECRET
         generateValue: true
       - key: ADMIN_USERNAME
