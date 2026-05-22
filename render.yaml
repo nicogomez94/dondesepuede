@@ -23,15 +23,16 @@ services:
     healthCheckPath: /api/health
     autoDeploy: true
 
-  # Frontend (React + Vite)
+  # Frontend Static Site (React + Vite)
   - type: web
     name: emilio-frontend-shared-db
     runtime: static
-    buildCommand: cd frontend && npm install && npm run build
+    region: oregon
+    buildCommand: cd frontend && npm ci && npm run build
     staticPublishPath: ./frontend/dist
     envVars:
       - key: VITE_API_URL
-        value: https://emilio-backend-shared-db.onrender.com/api
+        value: https://emilio-otro-db.onrender.com/api
     routes:
       - type: rewrite
         source: /*
