@@ -27,7 +27,6 @@ services:
   - type: web
     name: emilio-frontend-shared-db
     runtime: static
-    region: oregon
     buildCommand: cd frontend && npm ci && npm run build
     staticPublishPath: ./frontend/dist
     envVars:
