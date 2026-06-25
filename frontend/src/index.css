@@ -299,6 +299,12 @@ a { color: inherit; }
 
 .footer-bottom p { margin: 0; }
 
+.footer-bottom a {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
 @media (max-width: 700px) {
   .footer-grid {
     grid-template-columns: 1fr;
@@ -709,6 +715,27 @@ a { color: inherit; }
   display: block;
 }
 
+.offer-image-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.offer-discount-badge {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0.35rem 0.75rem;
+  border-radius: 10px;
+  background: #1f2523;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 900;
+  box-shadow: 0 10px 24px rgba(31, 37, 35, 0.24);
+}
+
 .event-card-image {
   width: 100%;
   height: 200px;
@@ -736,6 +763,47 @@ a { color: inherit; }
   margin: 0;
   font-size: 1.2rem;
   font-weight: 800;
+}
+
+.offer-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.offer-expiration {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.22rem 0.7rem;
+  border-radius: 999px;
+  background: #f4e7e3;
+  color: var(--danger);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.offer-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+  margin: 0.15rem 0;
+}
+
+.offer-price-row strong {
+  font-size: clamp(1.55rem, 5vw, 2rem);
+  line-height: 1;
+  color: var(--primary-strong);
+}
+
+.offer-old-price {
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: line-through;
 }
 
 .event-card-body h3 {
@@ -944,6 +1012,33 @@ textarea:focus {
   border-radius: 16px;
   object-fit: cover;
   min-height: 300px;
+}
+
+.offer-detail-price {
+  display: grid;
+  gap: 0.3rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface-soft);
+}
+
+.offer-detail-price span {
+  width: fit-content;
+  color: var(--muted);
+  font-weight: 800;
+  text-decoration: line-through;
+}
+
+.offer-detail-price strong {
+  color: var(--primary-strong);
+  font-size: clamp(2rem, 6vw, 3.4rem);
+  line-height: 1;
+}
+
+.offer-detail-price small {
+  color: var(--danger);
+  font-weight: 800;
 }
 
 /* ==============================
@@ -1181,6 +1276,25 @@ textarea:focus {
   height: 240px;
 }
 
+.offer-banner-slideshow {
+  min-height: 300px;
+  background: #1f2523;
+}
+
+.offer-banner-slide {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  opacity: 0;
+  transform: scale(1.03);
+  transition: opacity 0.9s ease, transform 3.8s ease;
+}
+
+.offer-banner-slide.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
 .banner-overlay {
   position: absolute;
   inset: 0;
@@ -1190,6 +1304,52 @@ textarea:focus {
   justify-content: flex-end;
   padding: 1.6rem 2rem;
   gap: 0.35rem;
+}
+
+.offer-banner-overlay {
+  justify-content: center;
+  background:
+    linear-gradient(90deg, rgba(20,28,25,0.84) 0%, rgba(20,28,25,0.62) 46%, rgba(20,28,25,0.2) 100%),
+    linear-gradient(to top, rgba(20,28,25,0.72), rgba(20,28,25,0.08));
+  padding: clamp(1.4rem, 4vw, 3rem);
+}
+
+.offer-banner-overlay .eyebrow {
+  color: rgba(255, 255, 255, 0.88);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.35);
+}
+
+.banner-overlay.offer-banner-overlay h1 {
+  font-size: clamp(2rem, 4.8vw, 4rem);
+  max-width: 12ch;
+}
+
+.offer-banner-overlay p:not(.eyebrow) {
+  max-width: 42rem;
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
+  line-height: 1.45;
+}
+
+.offer-banner-dots {
+  display: flex;
+  gap: 0.45rem;
+  margin-top: 1.1rem;
+}
+
+.offer-banner-dot {
+  width: 34px;
+  height: 8px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.42);
+  cursor: pointer;
+  padding: 0;
+  transition: width 0.2s ease, background 0.2s ease;
+}
+
+.offer-banner-dot.active {
+  width: 54px;
+  background: #fff;
 }
 
 .banner-overlay h1 {
@@ -1474,6 +1634,10 @@ textarea:focus {
   .hero {
     padding: 2rem 1.5rem;
     min-height: auto;
+  }
+
+  .offer-banner-slideshow {
+    min-height: 260px;
   }
 }
 

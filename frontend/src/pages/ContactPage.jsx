@@ -79,13 +79,13 @@ function ContactPage() {
       <div className="banner-wrap">
         <img
           src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1500&q=80"
-          alt="Contacto del directorio local"
+          alt="Contacto de ofertas locales"
           className="contact-image"
           loading="lazy"
         />
         <div className="banner-overlay">
           <h1>Hablemos</h1>
-          <p>Estamos para ayudarte a sumar informacion, actualizar datos o resolver consultas del directorio.</p>
+          <p>Estamos para ayudarte a publicar ofertas, actualizar datos o resolver consultas de la plataforma.</p>
         </div>
       </div>
 
@@ -180,7 +180,7 @@ function ContactPage() {
           <div className="contact-info-card">
             <p>
               <i className="fas fa-envelope" style={{ marginRight: "0.6rem", color: "var(--primary)" }} />
-              <strong>Email:</strong> contacto@directoriolocal.com
+              <strong>Email:</strong> contacto@ofertaslocales.com
             </p>
             <p>
               <i className="fas fa-phone" style={{ marginRight: "0.6rem", color: "var(--secondary)" }} />

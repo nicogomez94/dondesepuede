@@ -3,6 +3,27 @@ import { useParams } from "react-router-dom";
 import { fetchBusinessById, resolveImageUrl } from "../api/client";
 import { buildGoogleMapsEmbedUrl, buildGoogleMapsSearchUrl } from "../utils/maps";
 
+function formatCurrency(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number) || number <= 0) return "";
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+    maximumFractionDigits: 0,
+  }).format(number);
+}
+
+function formatExpiration(value) {
+  if (!value) return "vigente esta semana";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "vigente esta semana";
+  return date.toLocaleDateString("es-AR", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+  });
+}
+
 function BusinessDetailPage() {
   const { id } = useParams();
   const [business, setBusiness] = useState(null);
@@ -21,7 +42,7 @@ function BusinessDetailPage() {
   }, [id]);
 
   if (error) return <p className="error-message">{error}</p>;
-  if (!business) return <p>Cargando detalle...</p>;
+  if (!business) return <p>Cargando oferta...</p>;
 
   const mapAddress = business.address || business.name;
 
@@ -32,10 +53,20 @@ function BusinessDetailPage() {
         <div className="stack-sm">
           <p className="eyebrow">
             <i className="fas fa-tag" style={{ marginRight: "0.4rem" }} />
-            {business.category?.name || "Sin categoria"}
+            {business.category?.name || "Sin rubro"}
           </p>
           <h2>{business.name}</h2>
           <p>{business.description}</p>
+          <div className="offer-detail-price">
+            {business.regularPrice ? (
+              <span>{formatCurrency(business.regularPrice)}</span>
+            ) : null}
+            <strong>{formatCurrency(business.salePrice) || "Consultar precio"}</strong>
+            <small>
+              <i className="fas fa-clock" style={{ marginRight: "0.35rem" }} />
+              Oferta hasta el {formatExpiration(business.expiresAt)}
+            </small>
+          </div>
           {business.phone && (
             <p>
               <i className="fas fa-phone" style={{ marginRight: "0.5rem", color: "var(--accent-teal)" }} />
@@ -84,7 +115,7 @@ function BusinessDetailPage() {
               <i className="fas fa-xmark" />
             </button>
             <div className="map-modal-content">
-              <h3>Ubicacion en el mapa</h3>
+              <h3>Como llegar al comercio</h3>
               <p>{mapAddress}</p>
               <iframe
                 title={`Mapa de ${business.name}`}

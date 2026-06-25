@@ -3,6 +3,12 @@ const prisma = require("../config/prisma");
 
 const router = express.Router();
 
+function parseOfferExpiration(value) {
+  if (!value) return null;
+  const normalized = String(value);
+  return new Date(normalized.includes("T") ? normalized : `${normalized}T23:59:59`);
+}
+
 function parseBusinessPayload(body) {
   return {
     name: body.name?.trim(),
@@ -10,6 +16,9 @@ function parseBusinessPayload(body) {
     phone: body.phone?.trim() || null,
     address: body.address?.trim() || null,
     logoUrl: body.logoUrl?.trim() || body.logo_url?.trim() || null,
+    regularPrice: body.regularPrice || body.regular_price ? Number(body.regularPrice || body.regular_price) : null,
+    salePrice: body.salePrice || body.sale_price ? Number(body.salePrice || body.sale_price) : null,
+    expiresAt: parseOfferExpiration(body.expiresAt || body.expires_at),
     categoryId: Number(body.categoryId || body.category_id),
     instagram: body.instagram?.trim() || null,
     facebook: body.facebook?.trim() || null,
@@ -71,6 +80,26 @@ function validateUsefulPhonePayload(payload) {
 
   if (Number.isNaN(payload.sortOrder)) {
     return "El orden debe ser un numero valido.";
+  }
+
+  return null;
+}
+
+function validateBusinessPayload(payload) {
+  if (!payload.name || !payload.categoryId) {
+    return "Nombre del negocio y rubro son obligatorios.";
+  }
+
+  if (payload.regularPrice === null || payload.salePrice === null || !payload.expiresAt) {
+    return "Precio anterior, precio de oferta y vencimiento son obligatorios.";
+  }
+
+  if (Number.isNaN(payload.regularPrice) || Number.isNaN(payload.salePrice)) {
+    return "Los precios deben ser numeros validos.";
+  }
+
+  if (Number.isNaN(payload.expiresAt.getTime())) {
+    return "La fecha de vencimiento es invalida.";
   }
 
   return null;
@@ -164,7 +193,7 @@ router.delete("/categories/:id", async (req, res, next) => {
     const businessCount = await prisma.business.count({ where: { categoryId: id } });
     if (businessCount > 0) {
       return res.status(409).json({
-        message: "No se puede eliminar una categoria con comercios asociados.",
+        message: "No se puede eliminar una categoria con ofertas asociadas.",
       });
     }
 
@@ -191,9 +220,10 @@ router.get("/businesses", async (_, res, next) => {
 router.post("/businesses", async (req, res, next) => {
   try {
     const payload = parseBusinessPayload(req.body);
+    const validationError = validateBusinessPayload(payload);
 
-    if (!payload.name || !payload.categoryId) {
-      return res.status(400).json({ message: "Nombre y categoria son obligatorios." });
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
     }
 
     const business = await prisma.business.create({
@@ -211,9 +241,14 @@ router.put("/businesses/:id", async (req, res, next) => {
   try {
     const id = Number(req.params.id);
     const payload = parseBusinessPayload(req.body);
+    const validationError = validateBusinessPayload(payload);
 
-    if (!id || !payload.name || !payload.categoryId) {
+    if (!id) {
       return res.status(400).json({ message: "Datos invalidos." });
+    }
+
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
     }
 
     const business = await prisma.business.update({

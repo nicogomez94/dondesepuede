@@ -3,6 +3,15 @@ const prisma = require("../config/prisma");
 
 const router = express.Router();
 
+function buildActiveOfferFilter() {
+  return {
+    OR: [
+      { expiresAt: null },
+      { expiresAt: { gte: new Date() } },
+    ],
+  };
+}
+
 function buildEventFilters(query) {
   const { search = "", month = "", status = "" } = query;
   const filters = [];
@@ -74,7 +83,11 @@ router.get("/categories", async (_, res, next) => {
     const categories = await prisma.category.findMany({
       include: {
         _count: {
-          select: { businesses: true },
+          select: {
+            businesses: {
+              where: buildActiveOfferFilter(),
+            },
+          },
         },
       },
       orderBy: { name: "asc" },
@@ -89,25 +102,28 @@ router.get("/categories", async (_, res, next) => {
 router.get("/businesses", async (req, res, next) => {
   try {
     const { search = "", categoryId } = req.query;
-    const where = {};
+    const filters = [buildActiveOfferFilter()];
 
     if (search) {
-      where.name = {
-        contains: String(search),
-        mode: "insensitive",
-      };
+      filters.push({
+        OR: [
+          { name: { contains: String(search), mode: "insensitive" } },
+          { description: { contains: String(search), mode: "insensitive" } },
+          { address: { contains: String(search), mode: "insensitive" } },
+        ],
+      });
     }
 
     if (categoryId) {
-      where.categoryId = Number(categoryId);
+      filters.push({ categoryId: Number(categoryId) });
     }
 
     const businesses = await prisma.business.findMany({
-      where,
+      where: { AND: filters },
       include: {
         category: true,
       },
-      orderBy: { name: "asc" },
+      orderBy: [{ expiresAt: "asc" }, { id: "desc" }],
     });
 
     res.json(businesses);
@@ -131,8 +147,8 @@ router.get("/businesses/:id", async (req, res, next) => {
       },
     });
 
-    if (!business) {
-      return res.status(404).json({ message: "Comercio no encontrado." });
+    if (!business || (business.expiresAt && business.expiresAt < new Date())) {
+      return res.status(404).json({ message: "Oferta no encontrada o vencida." });
     }
 
     return res.json(business);

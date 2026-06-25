@@ -51,22 +51,22 @@ function CategoriesPage() {
       <div className="banner-wrap">
         <img
           src="https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?auto=format&fit=crop&w=1500&q=80"
-          alt="Categorias de comercios"
+          alt="Rubros de ofertas"
           className="section-banner"
           loading="lazy"
         />
         <div className="banner-overlay">
           <h1>Rubros disponibles</h1>
-          <p>Explora categorias pensadas para encontrar comercios, profesionales y servicios con facilidad.</p>
+          <p>Filtra promociones por gastronomia, compras, alojamiento y servicios de la ciudad.</p>
         </div>
       </div>
 
       <div>
         <h2>
           <i className="fas fa-tags" style={{ marginRight: "0.5rem", color: "var(--primary)" }} />
-          Categorias Destacadas
+          Rubros con ofertas
         </h2>
-        <p>Descubri los rubros disponibles para encontrar lo que buscas rapido y facil.</p>
+        <p>Entra a cada rubro para ver solamente las ofertas activas.</p>
       </div>
 
       {error && <p className="error-message">{error}</p>}
@@ -102,14 +102,14 @@ function CategoriesPage() {
                   style={{ color: meta.color }}
                 />
                 <h3>{category.name}</h3>
-                <p>{category._count?.businesses || 0} comercios</p>
+                <p>{category._count?.businesses || 0} ofertas activas</p>
                 <Link
-                  to={`/comercios?category=${category.id}`}
+                  to={`/ofertas?category=${category.id}`}
                   className="button-link"
                   style={{ background: meta.color }}
                 >
                   <i className="fas fa-arrow-right" style={{ marginRight: "0.4rem" }} />
-                  Ver comercios
+                  Ver ofertas
                 </Link>
               </div>
             </article>

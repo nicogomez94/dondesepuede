@@ -2,9 +2,9 @@ import { useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 
 const navItems = [
+  { to: "/ofertas",    label: "Ofertas",    icon: "fa-ticket" },
+  { to: "/categorias", label: "Rubros", icon: "fa-tags" },
   { to: "/eventos",    label: "Eventos",    icon: "fa-calendar-days" },
-  { to: "/categorias", label: "Categorias", icon: "fa-tags" },
-  { to: "/comercios",  label: "Comercios",  icon: "fa-store" },
   { to: "/contacto",   label: "Contacto",   icon: "fa-envelope" },
 ];
 
@@ -19,13 +19,12 @@ function SiteLayout() {
         <div className="container header-inner">
           <Link to="/" className="brand-link">
             <p className="eyebrow">
-              <i className="fas fa-building-columns" style={{ marginRight: "0.35rem" }} />
-              Directorio local
+              <i className="fas fa-bolt" style={{ marginRight: "0.35rem" }} />
+              San Rafael
             </p>
             <h1 className="brand">
-              <i className="fas fa-map-location-dot" style={{ marginRight: "0.4rem" }} />
-              <span className="brand-prefix">Guia Comercial — </span>
-              <span className="brand-location">Tu Ciudad</span>
+              <i className="fas fa-tags" style={{ marginRight: "0.4rem" }} />
+              <span className="brand-location">Ofertas San Rafael</span>
             </h1>
           </Link>
           <button
@@ -69,11 +68,11 @@ function SiteLayout() {
           {/* Marca */}
           <div className="footer-col">
             <Link to="/" className="footer-brand">
-              <i className="fas fa-umbrella-beach" />
-              Guia Comercial
+              <i className="fas fa-ticket" />
+              Ofertas San Rafael
             </Link>
             <p className="footer-desc">
-              Conectando personas, comercios y servicios de la comunidad.
+              Ofertas activas de comercios de San Rafael, ordenadas por rubro y vigencia.
             </p>
           </div>
 
@@ -104,7 +103,7 @@ function SiteLayout() {
             <ul className="footer-links">
               <li>
                 <i className="fas fa-location-dot" style={{ marginRight: "0.4rem" }} />
-                Direccion principal
+                San Rafael, Mendoza
               </li>
               <li>
                 <i className="fas fa-envelope" style={{ marginRight: "0.4rem" }} />
@@ -121,7 +120,11 @@ function SiteLayout() {
 
         <div className="footer-bottom">
           <p>
-            © {new Date().getFullYear()} Guia Comercial Local. Todos los derechos reservados.
+            © {new Date().getFullYear()} Ofertas San Rafael. Todos los derechos reservados.
+            {" "}Hecho por{" "}
+            <a href="https://zigodev.com.ar" target="_blank" rel="noopener noreferrer">
+              zigodev
+            </a>
           </p>
         </div>
       </footer>

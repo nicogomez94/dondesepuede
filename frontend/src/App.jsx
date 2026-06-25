@@ -16,7 +16,9 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/eventos" element={<EventsPage />} />
           <Route path="/categorias" element={<CategoriesPage />} />
-          <Route path="/comercios" element={<BusinessesPage />} />
+          <Route path="/ofertas" element={<BusinessesPage />} />
+          <Route path="/ofertas/:id" element={<BusinessDetailPage />} />
+          <Route path="/comercios" element={<Navigate to="/ofertas" replace />} />
           <Route path="/comercios/:id" element={<BusinessDetailPage />} />
           <Route path="/contacto" element={<ContactPage />} />
           <Route path="/admin/login" element={<Navigate to="/admin" replace />} />

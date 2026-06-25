@@ -13,16 +13,16 @@ import EventCard from "../components/EventCard";
 // ─── Slideshow images ───────────────────────────────────────────────────────
 const SLIDES = [
   {
-    url: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=1500&q=80",
-    caption: "Centro urbano y comercios locales",
+    url: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1500&q=80",
+    caption: "Ofertas de almacen y comercios locales",
   },
   {
-    url: "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1500&q=80",
-    caption: "Servicios para vecinos y visitantes",
+    url: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1500&q=80",
+    caption: "Promociones de panaderias y cafeterias",
   },
   {
     url: "https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?auto=format&fit=crop&w=1500&q=80",
-    caption: "Locales y propuestas comerciales",
+    caption: "Locales con promociones semanales",
   },
   {
     url: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1500&q=80",
@@ -151,16 +151,15 @@ function HomePage() {
         <div className="hero-content">
           <p className="eyebrow">
             <i className="fas fa-location-dot" style={{ marginRight: "0.4rem" }} />
-            Guia local actualizada
+            Ofertas San Rafael
           </p>
-          <h2>Guia comercial para tu ciudad</h2>
+          <h2>Ofertas activas cerca tuyo</h2>
           <p>
-            Un directorio claro para consultar rubros, contactos, eventos y
-            telefonos utiles sin vueltas.
+            Un feed simple para descubrir promociones semanales, filtrar por rubro y llegar al comercio con el mapa.
           </p>
-          <Link to="/comercios" className="button-link">
-            <i className="fas fa-map" style={{ marginRight: "0.5rem" }} />
-            Explorar comercios
+          <Link to="/ofertas" className="button-link">
+            <i className="fas fa-ticket" style={{ marginRight: "0.5rem" }} />
+            Ver ofertas
           </Link>
         </div>
 
@@ -184,7 +183,7 @@ function HomePage() {
       <section className="stack-md">
         <h3>
           <i className="fas fa-tags" style={{ marginRight: "0.5rem", color: "var(--primary)" }} />
-          Categorias principales
+          Rubros principales
         </h3>
         <div className="category-grid">
           {categories.map((category, i) => {
@@ -217,7 +216,7 @@ function HomePage() {
                     style={{ color: meta.color }}
                   />
                   <h4>{category.name}</h4>
-                  <p>{category._count?.businesses || 0} comercios registrados</p>
+                  <p>{category._count?.businesses || 0} ofertas activas</p>
                 </div>
               </article>
             );
@@ -229,13 +228,13 @@ function HomePage() {
       <div className="banner-wrap">
         <img
           src="https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?auto=format&fit=crop&w=1500&q=80"
-          alt="Comercios locales"
+          alt="Ofertas locales"
           className="section-banner"
           loading="lazy"
         />
         <div className="banner-overlay">
-          <h1>Todo lo local en un solo lugar</h1>
-          <p>Gastronomia, compras, alojamiento, servicios y actividades para consultar rapido.</p>
+          <h1>Promos vigentes, sin datos vencidos</h1>
+          <p>Cuando una oferta llega a su fecha limite, deja de aparecer automaticamente en el feed.</p>
         </div>
       </div>
 
@@ -243,7 +242,7 @@ function HomePage() {
       <section className="stack-md">
         <h3>
           <i className="fas fa-star" style={{ marginRight: "0.5rem", color: "var(--accent-yellow)" }} />
-          Comercios destacados
+          Ofertas destacadas
         </h3>
         <div className="business-grid">
           {businesses.map((business) => (
@@ -251,8 +250,8 @@ function HomePage() {
           ))}
         </div>
         <div style={{ textAlign: "center", marginTop: "1.5rem" }}>
-          <Link to="/comercios" className="button-link">
-            Ver todos los comercios
+          <Link to="/ofertas" className="button-link">
+            Ver todas las ofertas
             <i className="fas fa-arrow-right" style={{ marginLeft: "0.5rem" }} />
           </Link>
         </div>

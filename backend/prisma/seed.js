@@ -3,6 +3,10 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 async function main() {
+  const offerExpiration = new Date();
+  offerExpiration.setDate(offerExpiration.getDate() + 7);
+  offerExpiration.setHours(23, 59, 0, 0);
+
   const categorySeeds = [
     {
       name: "Comercios",
@@ -39,10 +43,13 @@ async function main() {
   const businessSeeds = [
     {
       name: "Panaderia Central",
-      description: "Panificados artesanales y cafetera de especialidad.",
+      description: "Docena de facturas artesanales con precio especial de lanzamiento semanal.",
       phone: "+54 9 11 5555 1111",
       address: "Av. San Martin 321",
       logoUrl: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=900&q=80",
+      regularPrice: 8400,
+      salePrice: 5900,
+      expiresAt: offerExpiration,
       categoryId: categoriesByName.Comercios,
       instagram: "https://instagram.com/panaderiacentral",
       facebook: "https://facebook.com/panaderiacentral",
@@ -50,10 +57,13 @@ async function main() {
     },
     {
       name: "Hotel Plaza",
-      description: "Alojamiento centrico para turismo y viajes de negocio.",
+      description: "Noche de escapada con desayuno incluido reservando dentro de la semana.",
       phone: "+54 9 11 5555 2222",
       address: "Belgrano 88",
       logoUrl: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=900&q=80",
+      regularPrice: 52000,
+      salePrice: 39900,
+      expiresAt: offerExpiration,
       categoryId: categoriesByName.Alojamientos,
       instagram: "https://instagram.com/hotelplaza",
       facebook: "https://facebook.com/hotelplaza",
@@ -61,10 +71,13 @@ async function main() {
     },
     {
       name: "Tecnico Express",
-      description: "Servicio tecnico de PC, notebooks e impresoras.",
+      description: "Limpieza y diagnostico de notebooks con descuento por pago en efectivo.",
       phone: "+54 9 11 5555 3333",
       address: "Rivadavia 1200",
       logoUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80",
+      regularPrice: 18000,
+      salePrice: 12500,
+      expiresAt: offerExpiration,
       categoryId: categoriesByName.Servicios,
       instagram: "https://instagram.com/tecnicoexpress",
       facebook: "https://facebook.com/tecnicoexpress",

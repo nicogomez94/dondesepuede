@@ -1,7 +1,7 @@
 import { PRELOADED_DATA } from "../data/preloadedData";
 
 const rawApiUrl = (import.meta.env.VITE_API_URL || "http://localhost:4000/api").replace(/\/$/, "");
-const STORAGE_KEY = "genericDirectoryData:v2";
+const STORAGE_KEY = "genericDirectoryData:v3";
 
 function normalizeApiBaseUrl(url) {
   if (/\/api$/i.test(url)) return url;
@@ -32,10 +32,11 @@ function withCategoryCounts(data) {
     return { ...business, category };
   });
 
+  const activeBusinesses = businesses.filter(isOfferActive);
   const categories = data.categories.map((category) => ({
     ...category,
     _count: {
-      businesses: businesses.filter((business) => Number(business.categoryId) === Number(category.id)).length,
+      businesses: activeBusinesses.filter((business) => Number(business.categoryId) === Number(category.id)).length,
     },
   }));
 
@@ -77,6 +78,18 @@ function sortByName(items) {
   return [...items].sort((a, b) => a.name.localeCompare(b.name, "es"));
 }
 
+function toOfferExpiration(value) {
+  if (!value) return "";
+  const normalized = String(value);
+  return new Date(normalized.includes("T") ? normalized : `${normalized}T23:59:59`).toISOString();
+}
+
+function isOfferActive(offer) {
+  if (!offer.expiresAt) return true;
+  const expiresAt = new Date(offer.expiresAt);
+  return Number.isNaN(expiresAt.getTime()) || expiresAt >= new Date();
+}
+
 function sortEvents(items) {
   return [...items].sort((a, b) => new Date(a.startsAt) - new Date(b.startsAt) || Number(b.id) - Number(a.id));
 }
@@ -109,16 +122,17 @@ export async function fetchBusinesses({ search = "", categoryId = "" } = {}) {
   const selectedCategory = Number(categoryId);
 
   return data.businesses.filter((business) => {
+    if (!isOfferActive(business)) return false;
     const matchesSearch = !searchTerm || [business.name, business.description, business.address]
       .some((value) => normalizeText(value).includes(searchTerm));
     const matchesCategory = !selectedCategory || Number(business.categoryId) === selectedCategory;
     return matchesSearch && matchesCategory;
-  });
+  }).sort((a, b) => new Date(a.expiresAt || "2999-12-31") - new Date(b.expiresAt || "2999-12-31"));
 }
 
 export async function fetchBusinessById(id) {
   const business = getStoredData().businesses.find((item) => Number(item.id) === Number(id));
-  if (!business) throw new Error("Comercio no encontrado.");
+  if (!business || !isOfferActive(business)) throw new Error("Oferta no encontrada o vencida.");
   return business;
 }
 
@@ -187,7 +201,7 @@ export async function adminDeleteCategory(_token, id) {
   const data = getStoredData();
   const categoryId = Number(id);
   if (data.businesses.some((business) => Number(business.categoryId) === categoryId)) {
-    return reject("No se puede eliminar una categoria con comercios asociados.");
+    return reject("No se puede eliminar una categoria con ofertas asociadas.");
   }
 
   saveData({
@@ -204,7 +218,11 @@ export async function adminFetchBusinesses() {
 export async function adminCreateBusiness(_token, payload) {
   const data = getStoredData();
   if (!payload.name?.trim() || !Number(payload.categoryId)) {
-    return reject("Nombre y categoria son obligatorios.");
+    return reject("Nombre del negocio y rubro son obligatorios.");
+  }
+
+  if (!payload.regularPrice || !payload.salePrice || !payload.expiresAt) {
+    return reject("Precio anterior, precio de oferta y vencimiento son obligatorios.");
   }
 
   const nextBusiness = {
@@ -214,6 +232,9 @@ export async function adminCreateBusiness(_token, payload) {
     phone: payload.phone?.trim() || "",
     address: payload.address?.trim() || "",
     logoUrl: payload.logoUrl?.trim() || "",
+    regularPrice: Number(payload.regularPrice || 0),
+    salePrice: Number(payload.salePrice || 0),
+    expiresAt: toOfferExpiration(payload.expiresAt),
     categoryId: Number(payload.categoryId),
     instagram: payload.instagram?.trim() || "",
     facebook: payload.facebook?.trim() || "",
@@ -231,6 +252,10 @@ export async function adminUpdateBusiness(_token, id, payload) {
     return reject("Datos invalidos.");
   }
 
+  if (!payload.regularPrice || !payload.salePrice || !payload.expiresAt) {
+    return reject("Precio anterior, precio de oferta y vencimiento son obligatorios.");
+  }
+
   const nextData = saveData({
     ...data,
     businesses: data.businesses.map((business) =>
@@ -242,6 +267,9 @@ export async function adminUpdateBusiness(_token, id, payload) {
             phone: payload.phone?.trim() || "",
             address: payload.address?.trim() || "",
             logoUrl: payload.logoUrl?.trim() || "",
+            regularPrice: Number(payload.regularPrice || 0),
+            salePrice: Number(payload.salePrice || 0),
+            expiresAt: toOfferExpiration(payload.expiresAt),
             categoryId: Number(payload.categoryId),
             instagram: payload.instagram?.trim() || "",
             facebook: payload.facebook?.trim() || "",

@@ -119,7 +119,7 @@ function AdminDashboardPage() {
   async function submitCategory(event) {
     event.preventDefault();
     const isEditing = Boolean(editingCategory);
-    if (!confirmAction(isEditing ? "actualizar" : "crear", "categoria")) return;
+    if (!confirmAction(isEditing ? "actualizar" : "crear", "rubro")) return;
     setFeedback("");
     setError("");
     try {
@@ -129,10 +129,10 @@ function AdminDashboardPage() {
       };
       if (isEditing) {
         await adminUpdateCategory(token, editingCategory, payload);
-        setFeedback("Categoria actualizada.");
+        setFeedback("Rubro actualizado.");
       } else {
         await adminCreateCategory(token, payload);
-        setFeedback("Categoria creada.");
+        setFeedback("Rubro creado.");
       }
       setCategoryName(getDebugCategoryValue());
       setCategoryImageUrl("");
@@ -145,12 +145,12 @@ function AdminDashboardPage() {
   }
 
   async function removeCategory(id) {
-    if (!confirmAction("eliminar", "categoria")) return;
+    if (!confirmAction("eliminar", "rubro")) return;
     setFeedback("");
     setError("");
     try {
       await adminDeleteCategory(token, id);
-      setFeedback("Categoria eliminada.");
+      setFeedback("Rubro eliminado.");
       await loadAdminData();
     } catch (e) {
       setError(e.message);
@@ -160,17 +160,17 @@ function AdminDashboardPage() {
   async function submitBusiness(event) {
     event.preventDefault();
     const isEditing = Boolean(businessForm.id);
-    if (!confirmAction(isEditing ? "actualizar" : "crear", "comercio")) return;
+    if (!confirmAction(isEditing ? "actualizar" : "crear", "oferta")) return;
     setFeedback("");
     setError("");
     try {
       const payload = { ...businessForm, categoryId: Number(businessForm.categoryId) };
       if (isEditing) {
         await adminUpdateBusiness(token, businessForm.id, payload);
-        setFeedback("Comercio actualizado.");
+        setFeedback("Oferta actualizada.");
       } else {
         await adminCreateBusiness(token, payload);
-        setFeedback("Comercio creado.");
+        setFeedback("Oferta creada.");
       }
       setBusinessForm(getDebugBusinessValues(String(categories[0]?.id || "")));
       closeModal();
@@ -181,12 +181,12 @@ function AdminDashboardPage() {
   }
 
   async function removeBusiness(id) {
-    if (!confirmAction("eliminar", "comercio")) return;
+    if (!confirmAction("eliminar", "oferta")) return;
     setFeedback("");
     setError("");
     try {
       await adminDeleteBusiness(token, id);
-      setFeedback("Comercio eliminado.");
+      setFeedback("Oferta eliminada.");
       await loadAdminData();
     } catch (e) {
       setError(e.message);
@@ -271,6 +271,9 @@ function AdminDashboardPage() {
       phone: business.phone || "",
       address: business.address || "",
       logoUrl: business.logoUrl || "",
+      regularPrice: business.regularPrice || "",
+      salePrice: business.salePrice || "",
+      expiresAt: business.expiresAt ? toDateTimeLocalValue(business.expiresAt).slice(0, 10) : "",
       categoryId: business.categoryId || "",
       instagram: business.instagram || "",
       facebook: business.facebook || "",
@@ -401,14 +404,14 @@ function AdminDashboardPage() {
             className={tab === "businesses" ? "button-link" : "ghost-button"}
             onClick={() => { setTab("businesses"); setFormOpen(false); }}
           >
-            Comercios
+            Ofertas
           </button>
           <button
             type="button"
             className={tab === "categories" ? "button-link" : "ghost-button"}
             onClick={() => { setTab("categories"); setFormOpen(false); }}
           >
-            Categorias
+            Rubros
           </button>
           <button
             type="button"
@@ -426,20 +429,25 @@ function AdminDashboardPage() {
       {!formOpen && feedback && <p className="ok-message">{feedback}</p>}
       {!formOpen && error && <p className="error-message">{error}</p>}
 
-      {/* ── COMERCIOS ── */}
+      {/* ── OFERTAS ── */}
       {tab === "businesses" && (
         <div className="list-card" style={{ marginTop: "1rem" }}>
           <div className="list-card-header">
-            <h2>Comercios</h2>
+            <h2>Ofertas</h2>
             <button type="button" className="button-link" onClick={startNewBusiness}>
               <i className="fas fa-plus" style={{ marginRight: "0.4rem" }} />
-              Nuevo comercio
+              Nueva oferta
             </button>
           </div>
           <ul className="admin-list">
             {businesses.map((business) => (
               <li key={business.id}>
-                <span>{business.name} — {categoriesById[business.categoryId] || "Sin categoria"}</span>
+                <span>
+                  {business.name} - {categoriesById[business.categoryId] || "Sin rubro"}
+                  <small className="admin-list-meta">
+                    Vence: {business.expiresAt ? new Date(business.expiresAt).toLocaleDateString("es-AR") : "sin fecha"}
+                  </small>
+                </span>
                 <div>
                   <button type="button" className="ghost-button" onClick={() => startEditBusiness(business)}>
                     Editar
@@ -482,14 +490,14 @@ function AdminDashboardPage() {
         </div>
       )}
 
-      {/* ── CATEGORIAS ── */}
+      {/* ── RUBROS ── */}
       {tab === "categories" && (
         <div className="list-card" style={{ marginTop: "1rem" }}>
           <div className="list-card-header">
-            <h2>Categorias</h2>
+            <h2>Rubros</h2>
             <button type="button" className="button-link" onClick={startNewCategory}>
               <i className="fas fa-plus" style={{ marginRight: "0.4rem" }} />
-              Nueva categoria
+              Nuevo rubro
             </button>
           </div>
           <ul className="admin-list">
@@ -551,12 +559,12 @@ function AdminDashboardPage() {
             {feedback && <p className="ok-message">{feedback}</p>}
             {error && <p className="error-message">{error}</p>}
 
-            {/* Formulario comercio */}
+            {/* Formulario oferta */}
             {tab === "businesses" && (
               <form className="form-card modal-form" onSubmit={submitBusiness}>
-                <h2>{businessForm.id ? "Editar comercio" : "Nuevo comercio"}</h2>
+                <h2>{businessForm.id ? "Editar oferta" : "Nueva oferta"}</h2>
                 <label>
-                  Nombre
+                  Nombre del negocio
                   <input
                     value={businessForm.name}
                     onChange={(e) => setBusinessForm((prev) => ({ ...prev, name: e.target.value }))}
@@ -564,7 +572,7 @@ function AdminDashboardPage() {
                   />
                 </label>
                 <label>
-                  Descripcion
+                  Descripcion de la oferta
                   <textarea
                     rows={3}
                     value={businessForm.description}
@@ -573,7 +581,7 @@ function AdminDashboardPage() {
                   />
                 </label>
                 <label>
-                  Categoria
+                  Rubro
                   <select
                     value={businessForm.categoryId}
                     onChange={(e) => setBusinessForm((prev) => ({ ...prev, categoryId: e.target.value }))}
@@ -584,6 +592,39 @@ function AdminDashboardPage() {
                       <option key={category.id} value={category.id}>{category.name}</option>
                     ))}
                   </select>
+                </label>
+                <div className="form-row">
+                  <label>
+                    Precio anterior
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={businessForm.regularPrice}
+                      onChange={(e) => setBusinessForm((prev) => ({ ...prev, regularPrice: e.target.value }))}
+                      required
+                    />
+                  </label>
+                  <label>
+                    Precio de oferta
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={businessForm.salePrice}
+                      onChange={(e) => setBusinessForm((prev) => ({ ...prev, salePrice: e.target.value }))}
+                      required
+                    />
+                  </label>
+                </div>
+                <label>
+                  Fecha de vencimiento
+                  <input
+                    type="date"
+                    value={businessForm.expiresAt}
+                    onChange={(e) => setBusinessForm((prev) => ({ ...prev, expiresAt: e.target.value }))}
+                    required
+                  />
                 </label>
                 <label>
                   Telefono
@@ -621,7 +662,7 @@ function AdminDashboardPage() {
                   />
                 </label>
                 <label>
-                  Logo/imagen (URL)
+                  Foto del producto u oferta (URL)
                   <input
                     value={businessForm.logoUrl}
                     onChange={(e) => setBusinessForm((prev) => ({ ...prev, logoUrl: e.target.value }))}
@@ -647,7 +688,7 @@ function AdminDashboardPage() {
                 <div className="modal-form-actions">
                   <button type="button" className="ghost-button" onClick={closeModal}>Cancelar</button>
                   <button type="submit" className="button-link">
-                    {businessForm.id ? "Guardar cambios" : "Crear comercio"}
+                    {businessForm.id ? "Guardar cambios" : "Crear oferta"}
                   </button>
                 </div>
               </form>
@@ -732,10 +773,10 @@ function AdminDashboardPage() {
               </form>
             )}
 
-            {/* Formulario categoria */}
+            {/* Formulario rubro */}
             {tab === "categories" && (
               <form className="form-card modal-form" onSubmit={submitCategory}>
-                <h2>{editingCategory ? "Editar categoria" : "Nueva categoria"}</h2>
+                <h2>{editingCategory ? "Editar rubro" : "Nuevo rubro"}</h2>
                 <label>
                   Nombre
                   <input
@@ -766,7 +807,7 @@ function AdminDashboardPage() {
                   />
                 </label>
                 {categoryImageUrl && (
-                  <img src={resolveImageUrl(categoryImageUrl)} alt="Preview de categoria" className="preview-image" />
+                  <img src={resolveImageUrl(categoryImageUrl)} alt="Preview de rubro" className="preview-image" />
                 )}
                 <div className="modal-form-actions">
                   <button type="button" className="ghost-button" onClick={closeModal}>Cancelar</button>

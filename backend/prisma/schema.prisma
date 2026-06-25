@@ -17,16 +17,19 @@ model Category {
 }
 
 model Business {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String
-  phone       String?
-  address     String?
-  logoUrl     String?  @map("logo_url")
-  categoryId  Int      @map("category_id")
-  instagram   String?
-  facebook    String?
-  website     String?
+  id           Int       @id @default(autoincrement())
+  name         String
+  description  String
+  phone        String?
+  address      String?
+  logoUrl      String?   @map("logo_url")
+  regularPrice Decimal?  @map("regular_price") @db.Decimal(12, 2)
+  salePrice    Decimal?  @map("sale_price") @db.Decimal(12, 2)
+  expiresAt    DateTime? @map("expires_at")
+  categoryId   Int       @map("category_id")
+  instagram    String?
+  facebook     String?
+  website      String?
 
   category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 

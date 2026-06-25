@@ -8,6 +8,14 @@ followingMonth.setMonth(followingMonth.getMonth() + 1);
 followingMonth.setDate(4);
 followingMonth.setHours(10, 30, 0, 0);
 
+const nextWeek = new Date();
+nextWeek.setDate(nextWeek.getDate() + 7);
+nextWeek.setHours(23, 59, 0, 0);
+
+const midWeek = new Date();
+midWeek.setDate(midWeek.getDate() + 4);
+midWeek.setHours(20, 0, 0, 0);
+
 export const PRELOADED_CATEGORIES = [
   {
     id: 1,
@@ -35,10 +43,13 @@ export const PRELOADED_BUSINESSES = [
   {
     id: 1,
     name: "Cafe Central",
-    description: "Desayunos, meriendas y opciones rapidas para una pausa durante el dia.",
+    description: "Combo de cafe con medialunas para arrancar la manana con precio especial.",
     phone: "+54 9 0000 111111",
     address: "Av. Principal 120",
     logoUrl: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=900&q=80",
+    regularPrice: 5800,
+    salePrice: 3900,
+    expiresAt: nextWeek.toISOString(),
     categoryId: 1,
     instagram: "https://instagram.com",
     facebook: "",
@@ -47,10 +58,13 @@ export const PRELOADED_BUSINESSES = [
   {
     id: 2,
     name: "Mercado Local",
-    description: "Almacen, bebidas, productos frescos y articulos de uso cotidiano.",
+    description: "Pack de almacen con yerba, fideos y tomate triturado hasta agotar stock.",
     phone: "+54 9 0000 222222",
     address: "Calle Comercial 455",
     logoUrl: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=900&q=80",
+    regularPrice: 11200,
+    salePrice: 8490,
+    expiresAt: nextWeek.toISOString(),
     categoryId: 2,
     instagram: "",
     facebook: "https://facebook.com",
@@ -59,10 +73,13 @@ export const PRELOADED_BUSINESSES = [
   {
     id: 3,
     name: "Apart Vista",
-    description: "Departamentos equipados para estadias cortas, vacaciones o viajes de trabajo.",
+    description: "Noche para dos con check-out extendido reservando dentro de la semana.",
     phone: "+54 9 0000 333333",
     address: "Boulevard Norte 78",
     logoUrl: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=900&q=80",
+    regularPrice: 46000,
+    salePrice: 34900,
+    expiresAt: midWeek.toISOString(),
     categoryId: 3,
     instagram: "",
     facebook: "",
@@ -71,10 +88,13 @@ export const PRELOADED_BUSINESSES = [
   {
     id: 4,
     name: "Soluciones Tecnicas",
-    description: "Reparaciones, mantenimiento y soporte para hogares, oficinas y comercios.",
+    description: "Diagnostico express para notebooks con bonificacion si se confirma la reparacion.",
     phone: "+54 9 0000 444444",
     address: "Pasaje de los Oficios 32",
     logoUrl: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=900&q=80",
+    regularPrice: 12500,
+    salePrice: 7900,
+    expiresAt: nextWeek.toISOString(),
     categoryId: 4,
     instagram: "",
     facebook: "",

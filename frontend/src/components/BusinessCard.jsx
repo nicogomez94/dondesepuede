@@ -3,26 +3,68 @@ import { Link } from "react-router-dom";
 import { resolveImageUrl } from "../api/client";
 import { buildGoogleMapsEmbedUrl, buildGoogleMapsSearchUrl } from "../utils/maps";
 
+function formatCurrency(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number) || number <= 0) return "";
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+    maximumFractionDigits: 0,
+  }).format(number);
+}
+
+function formatExpiration(value) {
+  if (!value) return "Esta semana";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Esta semana";
+  return date.toLocaleDateString("es-AR", { day: "2-digit", month: "short" });
+}
+
+function getDiscountPercent(regularPrice, salePrice) {
+  const regular = Number(regularPrice);
+  const sale = Number(salePrice);
+  if (!regular || !sale || sale >= regular) return null;
+  return Math.round(((regular - sale) / regular) * 100);
+}
+
 function BusinessCard({ business }) {
   const [showMap, setShowMap] = useState(false);
   const mapAddress = business.address || business.name;
+  const discountPercent = getDiscountPercent(business.regularPrice, business.salePrice);
 
   return (
     <>
       <article className="business-card">
-        <img
-          src={resolveImageUrl(business.logoUrl)}
-          alt={business.name}
-          className="business-card-image"
-          loading="lazy"
-        />
+        <div className="offer-image-wrap">
+          <img
+            src={resolveImageUrl(business.logoUrl)}
+            alt={business.name}
+            className="business-card-image"
+            loading="lazy"
+          />
+          {discountPercent ? (
+            <span className="offer-discount-badge">{discountPercent}% OFF</span>
+          ) : null}
+        </div>
         <div className="business-card-body">
+          <div className="offer-card-heading">
+            <p className="category-tag">
+              <i className="fas fa-tag" style={{ marginRight: "0.35rem" }} />
+              {business.category?.name || "Sin rubro"}
+            </p>
+            <span className="offer-expiration">
+              <i className="fas fa-clock" style={{ marginRight: "0.3rem" }} />
+              Hasta {formatExpiration(business.expiresAt)}
+            </span>
+          </div>
           <h3>{business.name}</h3>
-          <p className="category-tag">
-            <i className="fas fa-tag" style={{ marginRight: "0.35rem" }} />
-            {business.category?.name || "Sin categoria"}
-          </p>
           <p>{business.description}</p>
+          <div className="offer-price-row">
+            {business.regularPrice ? (
+              <span className="offer-old-price">{formatCurrency(business.regularPrice)}</span>
+            ) : null}
+            <strong>{formatCurrency(business.salePrice) || "Consultar precio"}</strong>
+          </div>
           {business.phone && (
             <p className="contact-line">
               <i className="fas fa-phone" style={{ marginRight: "0.4rem", color: "var(--accent-teal)" }} />
@@ -61,9 +103,9 @@ function BusinessCard({ business }) {
               </a>
             )}
           </div>
-          <Link to={`/comercios/${business.id}`} className="button-link">
-            <i className="fas fa-circle-info" style={{ marginRight: "0.45rem" }} />
-            Ver detalle
+          <Link to={`/ofertas/${business.id}`} className="button-link">
+            <i className="fas fa-ticket" style={{ marginRight: "0.45rem" }} />
+            Ver oferta
           </Link>
         </div>
       </article>
@@ -75,7 +117,7 @@ function BusinessCard({ business }) {
               <i className="fas fa-xmark" />
             </button>
             <div className="map-modal-content">
-              <h3>Ubicacion en el mapa</h3>
+              <h3>Como llegar al comercio</h3>
               <p>{mapAddress}</p>
               <iframe
                 title={`Mapa de ${business.name}`}
