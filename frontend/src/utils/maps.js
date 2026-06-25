@@ -1,4 +1,4 @@
-const DEFAULT_LOCALITY = "Paso de la Patria, Corrientes, Argentina";
+const DEFAULT_LOCALITY = "Argentina";
 
 function buildNormalizedMapQuery(rawAddress = "") {
   const normalizedAddress = String(rawAddress).trim();
@@ -6,7 +6,7 @@ function buildNormalizedMapQuery(rawAddress = "") {
 
   const lowerAddress = normalizedAddress.toLowerCase();
   const lowerLocality = DEFAULT_LOCALITY.toLowerCase();
-  if (lowerAddress.includes(lowerLocality) || lowerAddress.includes("paso de la patria")) {
+  if (lowerAddress.includes(lowerLocality)) {
     return normalizedAddress;
   }
 

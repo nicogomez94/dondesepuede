@@ -20,12 +20,12 @@ function SiteLayout() {
           <Link to="/" className="brand-link">
             <p className="eyebrow">
               <i className="fas fa-building-columns" style={{ marginRight: "0.35rem" }} />
-              Camara de Comercio
+              Directorio local
             </p>
             <h1 className="brand">
-              <i className="fas fa-umbrella-beach" style={{ marginRight: "0.4rem" }} />
+              <i className="fas fa-map-location-dot" style={{ marginRight: "0.4rem" }} />
               <span className="brand-prefix">Guia Comercial — </span>
-              <span className="brand-location">Paso de la Patria</span>
+              <span className="brand-location">Tu Ciudad</span>
             </h1>
           </Link>
           <button
@@ -52,7 +52,7 @@ function SiteLayout() {
               </NavLink>
             ))}
             <NavLink to="/admin" className="nav-link admin-link" onClick={closeMobileMenu}>
-              <i className="fas fa-lock" style={{ marginRight: "0.35rem" }} />
+              <i className="fas fa-sliders" style={{ marginRight: "0.35rem" }} />
               Admin
             </NavLink>
           </nav>
@@ -73,7 +73,7 @@ function SiteLayout() {
               Guia Comercial
             </Link>
             <p className="footer-desc">
-              Conectando vecinos y negocios de Paso de la Patria, Corrientes.
+              Conectando personas, comercios y servicios de la comunidad.
             </p>
           </div>
 
@@ -104,7 +104,7 @@ function SiteLayout() {
             <ul className="footer-links">
               <li>
                 <i className="fas fa-location-dot" style={{ marginRight: "0.4rem" }} />
-                Dirección, Paso de la Patria
+                Direccion principal
               </li>
               <li>
                 <i className="fas fa-envelope" style={{ marginRight: "0.4rem" }} />
@@ -121,7 +121,7 @@ function SiteLayout() {
 
         <div className="footer-bottom">
           <p>
-            © {new Date().getFullYear()} Cámara de Comercio Local — Paso de la Patria. Todos los derechos reservados.
+            © {new Date().getFullYear()} Guia Comercial Local. Todos los derechos reservados.
           </p>
         </div>
       </footer>

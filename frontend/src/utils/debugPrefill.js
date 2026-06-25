@@ -1,19 +1,5 @@
 import { DEBUG_PREFILL_FORMS } from "../config/debug";
 
-export function getDebugLoginValues() {
-  if (!DEBUG_PREFILL_FORMS) {
-    return {
-      username: "",
-      password: "",
-    };
-  }
-
-  return {
-    username: "admin",
-    password: "admin123",
-  };
-}
-
 export function getDebugCategoryValue() {
   return DEBUG_PREFILL_FORMS ? "Gastronomia" : "";
 }
@@ -26,7 +12,7 @@ export function getDebugBusinessValues(categoryId = "") {
       ? "Especialidad en cafe, brunch y pasteleria artesanal frente a la costanera."
       : "",
     phone: DEBUG_PREFILL_FORMS ? "+54 9 379 412 3456" : "",
-    address: DEBUG_PREFILL_FORMS ? "Av. Costanera 245, Paso de la Patria" : "",
+    address: DEBUG_PREFILL_FORMS ? "Av. Principal 245" : "",
     logoUrl: DEBUG_PREFILL_FORMS ? "https://picsum.photos/seed/debug-business/640/480" : "",
     categoryId,
     instagram: DEBUG_PREFILL_FORMS ? "https://instagram.com/cafedelrio" : "",

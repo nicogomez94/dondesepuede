@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { fetchUsefulPhones } from "../api/client";
 
 const FALLBACK_EMERGENCY_NUMBERS = [
-  { color: "#2563eb", label: "Policía", number: "101" },
-  { color: "#dc2626", label: "Bomberos", number: "100" },
-  { color: "#16a34a", label: "Ambulancia", number: "107" },
-  { color: "#7c3aed", label: "Defensa Civil", number: "103" },
-  { color: "#0891b2", label: "Prefectura Naval", number: "106" },
-  { color: "#d97706", label: "Comisaría local", number: "0000-000000" },
-  { color: "#059669", label: "Hospital municipal", number: "0000-000000" },
+  { color: "#4f6f72", label: "Policía", number: "101" },
+  { color: "#8b6f5a", label: "Bomberos", number: "100" },
+  { color: "#5f725f", label: "Ambulancia", number: "107" },
+  { color: "#6f766f", label: "Defensa Civil", number: "103" },
+  { color: "#4f6f72", label: "Prefectura Naval", number: "106" },
+  { color: "#9b865c", label: "Comisaría local", number: "0000-000000" },
+  { color: "#5f725f", label: "Hospital municipal", number: "0000-000000" },
 ];
 const FORMSPREE_ENDPOINT = "https://formspree.io/f/mpqyykvp";
 
@@ -78,14 +78,14 @@ function ContactPage() {
       {/* BANNER */}
       <div className="banner-wrap">
         <img
-          src="contacto.png"
-          alt="Contacto — Camara de Comercio Paso de la Patria"
+          src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1500&q=80"
+          alt="Contacto del directorio local"
           className="contact-image"
           loading="lazy"
         />
         <div className="banner-overlay">
           <h1>Hablemos</h1>
-          <p>La Cámara de Comercio de Paso de la Patria está para ayudarte. Sumate al directorio comercial.</p>
+          <p>Estamos para ayudarte a sumar informacion, actualizar datos o resolver consultas del directorio.</p>
         </div>
       </div>
 
@@ -180,15 +180,15 @@ function ContactPage() {
           <div className="contact-info-card">
             <p>
               <i className="fas fa-envelope" style={{ marginRight: "0.6rem", color: "var(--primary)" }} />
-              <strong>Email:</strong> camaracomerciopasodelapatria@gmail.com
+              <strong>Email:</strong> contacto@directoriolocal.com
             </p>
             <p>
               <i className="fas fa-phone" style={{ marginRight: "0.6rem", color: "var(--secondary)" }} />
-              <strong>Teléfono:</strong> +54 9 3794 57-0621
+              <strong>Teléfono:</strong> +54 9 0000 000000
             </p>
             <p>
               <i className="fas fa-location-dot" style={{ marginRight: "0.6rem", color: "var(--accent-pink)" }} />
-              <strong>Dirección:</strong> Rioja 1150, Paso de la Patria, W3409
+              <strong>Dirección:</strong> Direccion principal, ciudad
             </p>
             <p>
               <i className="fas fa-clock" style={{ marginRight: "0.6rem", color: "var(--accent-teal)" }} />

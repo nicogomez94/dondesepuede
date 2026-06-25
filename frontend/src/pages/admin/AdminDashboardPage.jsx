@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   adminCreateUsefulPhone,
   adminCreateBusiness,
@@ -39,21 +38,18 @@ function confirmAction(action, entity) {
 }
 
 const USEFUL_PHONE_COLOR_OPTIONS = [
-  { value: "#2563eb", label: "Azul" },
-  { value: "#dc2626", label: "Rojo" },
-  { value: "#16a34a", label: "Verde" },
-  { value: "#7c3aed", label: "Violeta" },
-  { value: "#0891b2", label: "Cian" },
-  { value: "#d97706", label: "Naranja" },
-  { value: "#059669", label: "Esmeralda" },
-  { value: "#ea580c", label: "Naranja oscuro" },
-  { value: "#ff6b35", label: "Coral" },
+  { value: "#31584c", label: "Verde petroleo" },
+  { value: "#4f6f72", label: "Azul grisaceo" },
+  { value: "#5f725f", label: "Oliva" },
+  { value: "#6f766f", label: "Gris verdoso" },
+  { value: "#8b6f5a", label: "Tierra" },
+  { value: "#9b865c", label: "Dorado apagado" },
   { value: "#475569", label: "Gris pizarra" },
+  { value: "#9b2f2f", label: "Rojo apagado" },
 ];
 
 function AdminDashboardPage() {
-  const navigate = useNavigate();
-  const token = localStorage.getItem("adminToken");
+  const token = "public-admin";
 
   const [tab, setTab] = useState("businesses");
   const [categories, setCategories] = useState([]);
@@ -67,7 +63,7 @@ function AdminDashboardPage() {
     id: null,
     label: "",
     number: "",
-    color: "#ff6b35",
+    color: "#31584c",
     sortOrder: 0,
   });
   const [businessForm, setBusinessForm] = useState(() => getDebugBusinessValues());
@@ -98,22 +94,13 @@ function AdminDashboardPage() {
       setEvents(eventsData);
       setUsefulPhones(usefulPhonesData);
     } catch (e) {
-      if (e.message.toLowerCase().includes("token")) {
-        localStorage.removeItem("adminToken");
-        navigate("/admin/login");
-        return;
-      }
       setError(e.message);
     }
-  }, [navigate, token]);
+  }, [token]);
 
   useEffect(() => {
-    if (!token) {
-      navigate("/admin/login");
-      return;
-    }
     loadAdminData();
-  }, [loadAdminData, navigate, token]);
+  }, [loadAdminData]);
 
   useEffect(() => {
     if (editingCategory || categoryName || categoryImageUrl) return;
@@ -334,7 +321,7 @@ function AdminDashboardPage() {
       id: usefulPhone.id,
       label: usefulPhone.label || "",
       number: usefulPhone.number || "",
-      color: usefulPhone.color || "#ff6b35",
+      color: usefulPhone.color || "#31584c",
       sortOrder: usefulPhone.sortOrder || 0,
     });
     setFormOpen(true);
@@ -346,7 +333,7 @@ function AdminDashboardPage() {
       id: null,
       label: "",
       number: "",
-      color: "#ff6b35",
+      color: "#31584c",
       sortOrder: maxSortOrder + 1,
     });
     setFormOpen(true);
@@ -392,9 +379,9 @@ function AdminDashboardPage() {
     }
   }
 
-  function logout() {
-    localStorage.removeItem("adminToken");
-    navigate("/admin/login");
+  function showPublicAccessMessage() {
+    setError("");
+    setFeedback("El panel esta abierto para cualquier visitante.");
   }
 
   return (
@@ -430,8 +417,8 @@ function AdminDashboardPage() {
           >
             Telefonos utiles
           </button>
-          <button type="button" className="ghost-button" onClick={logout}>
-            Cerrar sesion
+          <button type="button" className="ghost-button" onClick={showPublicAccessMessage}>
+            Acceso publico
           </button>
         </div>
       </header>

@@ -76,7 +76,7 @@ function BusinessCard({ business }) {
             </button>
             <div className="map-modal-content">
               <h3>Ubicacion en el mapa</h3>
-              <p>{mapAddress}, Paso de la Patria, Corrientes</p>
+              <p>{mapAddress}</p>
               <iframe
                 title={`Mapa de ${business.name}`}
                 src={buildGoogleMapsEmbedUrl(mapAddress)}

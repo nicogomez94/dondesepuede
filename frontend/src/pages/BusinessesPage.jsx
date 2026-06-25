@@ -45,14 +45,14 @@ function BusinessesPage() {
     <section className="stack-md">
       <div className="banner-wrap">
         <img
-          src="https://corrientes.tur.ar/wp-content/uploads/2024/12/bella_vista_top.jpg"
+          src="https://images.unsplash.com/photo-1481437156560-3205f6a55735?auto=format&fit=crop&w=1500&q=80"
           alt="Comercios locales"
           className="section-banner"
           loading="lazy"
         />
         <div className="banner-overlay">
-          <h1>Comercios de Paso de la Patria</h1>
-          <p>Buscá y encontrá los negocios que necesitás en nuestra ciudad, a orillas del Paraná.</p>
+          <h1>Guia de comercios</h1>
+          <p>Busca y encontra negocios, profesionales y servicios disponibles en tu zona.</p>
         </div>
       </div>
       <h2>

@@ -1,10 +1,7 @@
 const express = require("express");
 const prisma = require("../config/prisma");
-const authMiddleware = require("../middleware/auth");
 
 const router = express.Router();
-
-router.use(authMiddleware);
 
 function parseBusinessPayload(body) {
   return {

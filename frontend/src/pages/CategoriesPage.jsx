@@ -3,17 +3,17 @@ import { Link } from "react-router-dom";
 import { fetchCategories, resolveImageUrl } from "../api/client";
 
 const CATEGORY_META = {
-  gastronomia:  { icon: "fa-utensils",         seed: "food-restaurant", color: "#ff6b35" },
-  comercios:    { icon: "fa-bag-shopping",       seed: "shopping-market", color: "#ec4899" },
-  alojamientos: { icon: "fa-hotel",             seed: "hotel-lobby",     color: "#7c3aed" },
-  servicios:    { icon: "fa-screwdriver-wrench", seed: "business-office", color: "#0ea5e9" },
+  gastronomia:  { icon: "fa-utensils",         seed: "food-restaurant", color: "#8b6f5a" },
+  comercios:    { icon: "fa-bag-shopping",       seed: "shopping-market", color: "#31584c" },
+  alojamientos: { icon: "fa-hotel",             seed: "hotel-lobby",     color: "#6f766f" },
+  servicios:    { icon: "fa-screwdriver-wrench", seed: "business-office", color: "#4f6f72" },
 };
 
 const FALLBACK_META = [
-  { icon: "fa-store",    seed: "shop-store",  color: "#10b981" },
-  { icon: "fa-star",     seed: "city-street", color: "#fbbf24" },
-  { icon: "fa-bullseye", seed: "work-team",   color: "#f43f5e" },
-  { icon: "fa-rocket",   seed: "modern-city", color: "#6366f1" },
+  { icon: "fa-store",    seed: "shop-store",  color: "#5f725f" },
+  { icon: "fa-star",     seed: "city-street", color: "#9b865c" },
+  { icon: "fa-bullseye", seed: "work-team",   color: "#6f766f" },
+  { icon: "fa-rocket",   seed: "modern-city", color: "#31584c" },
 ];
 
 function normalize(str) {
@@ -50,14 +50,14 @@ function CategoriesPage() {
     <section className="stack-md">
       <div className="banner-wrap">
         <img
-          src="/otro.jpg"
-          alt="Categorias de comercios — Paso de la Patria"
+          src="https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?auto=format&fit=crop&w=1500&q=80"
+          alt="Categorias de comercios"
           className="section-banner"
           loading="lazy"
         />
         <div className="banner-overlay">
-          <h1>Rubros de nuestra ciudad</h1>
-          <p>Explorá la variedad de servicios y comercios que hacen a la vida en Paso de la Patria, Corrientes.</p>
+          <h1>Rubros disponibles</h1>
+          <p>Explora categorias pensadas para encontrar comercios, profesionales y servicios con facilidad.</p>
         </div>
       </div>
 
@@ -106,7 +106,7 @@ function CategoriesPage() {
                 <Link
                   to={`/comercios?category=${category.id}`}
                   className="button-link"
-                  style={{ background: `linear-gradient(135deg, ${meta.color}, #ec4899)` }}
+                  style={{ background: meta.color }}
                 >
                   <i className="fas fa-arrow-right" style={{ marginRight: "0.4rem" }} />
                   Ver comercios

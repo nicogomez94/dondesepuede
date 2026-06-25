@@ -1,10 +1,7 @@
 const express = require("express");
 const upload = require("../middleware/upload");
-const authMiddleware = require("../middleware/auth");
 
 const router = express.Router();
-
-router.use(authMiddleware);
 
 router.post("/image", upload.single("image"), (req, res) => {
   if (!req.file) {

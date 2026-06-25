@@ -71,7 +71,7 @@ function EventCard({ event }) {
             </button>
             <div className="map-modal-content">
               <h3>Ubicacion del evento</h3>
-              <p>{mapAddress}, Paso de la Patria, Corrientes</p>
+              <p>{mapAddress}</p>
               <iframe
                 title={`Mapa de ${event.title}`}
                 src={buildGoogleMapsEmbedUrl(mapAddress)}

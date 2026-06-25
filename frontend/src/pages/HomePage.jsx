@@ -11,52 +11,51 @@ import BusinessCard from "../components/BusinessCard";
 import EventCard from "../components/EventCard";
 
 // ─── Slideshow images ───────────────────────────────────────────────────────
-// Reemplaza estas URLs con fotos reales de Paso de la Patria, Corrientes
 const SLIDES = [
   {
-    url: "https://static.wixstatic.com/media/2fd7fb_c14ebb38ad7d4a9dbbdf49799592b700~mv2.jpg/v1/fill/w_568,h_374,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/2fd7fb_c14ebb38ad7d4a9dbbdf49799592b700~mv2.jpg",
-    caption: "Costa del Rio Paraná — Paso de la Patria",
+    url: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=1500&q=80",
+    caption: "Centro urbano y comercios locales",
   },
   {
-    url: "https://picsum.photos/seed/bella-vista-plaza/1400/500",
-    caption: "Plaza Principal — Paso de la Patria",
+    url: "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1500&q=80",
+    caption: "Servicios para vecinos y visitantes",
   },
   {
-    url: "https://picsum.photos/seed/bella-vista-centro/1400/500",
-    caption: "Centro Comercial — Paso de la Patria",
+    url: "https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?auto=format&fit=crop&w=1500&q=80",
+    caption: "Locales y propuestas comerciales",
   },
   {
-    url: "https://picsum.photos/seed/bella-vista-turismo/1400/500",
-    caption: "Turismo Local — Paso de la Patria",
+    url: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1500&q=80",
+    caption: "Gastronomia y puntos de encuentro",
   },
   {
-    url: "https://picsum.photos/seed/bella-vista-atardecer/1400/500",
-    caption: "Atardecer — Paso de la Patria, Corrientes",
+    url: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1500&q=80",
+    caption: "Espacios para disfrutar la ciudad",
   },
 ];
 
 const INTERVAL_MS = 4500;
 
 const FALLBACK_EMERGENCY_NUMBERS = [
-  { color: "#2563eb", label: "Policia", number: "101" },
-  { color: "#dc2626", label: "Bomberos", number: "100" },
-  { color: "#16a34a", label: "Ambulancia", number: "107" },
-  { color: "#7c3aed", label: "Defensa Civil", number: "103" },
+  { color: "#4f6f72", label: "Policia", number: "101" },
+  { color: "#8b6f5a", label: "Bomberos", number: "100" },
+  { color: "#5f725f", label: "Ambulancia", number: "107" },
+  { color: "#6f766f", label: "Defensa Civil", number: "103" },
 ];
 
 // ─── Category meta ───────────────────────────────────────────────────────────
 const CATEGORY_META = {
-  gastronomia:  { icon: "fa-utensils",    seed: "food-restaurant", color: "#ff6b35" },
-  comercios:    { icon: "fa-bag-shopping", seed: "shopping-market", color: "#ec4899" },
-  alojamientos: { icon: "fa-hotel",        seed: "hotel-lobby",     color: "#7c3aed" },
-  servicios:    { icon: "fa-screwdriver-wrench", seed: "business-office", color: "#0ea5e9" },
+  gastronomia:  { icon: "fa-utensils",    seed: "food-restaurant", color: "#8b6f5a" },
+  comercios:    { icon: "fa-bag-shopping", seed: "shopping-market", color: "#31584c" },
+  alojamientos: { icon: "fa-hotel",        seed: "hotel-lobby",     color: "#6f766f" },
+  servicios:    { icon: "fa-screwdriver-wrench", seed: "business-office", color: "#4f6f72" },
 };
 
 const FALLBACK_META = [
-  { icon: "fa-store",        seed: "shop-store",  color: "#10b981" },
-  { icon: "fa-star",         seed: "city-street", color: "#fbbf24" },
-  { icon: "fa-bullseye",     seed: "work-team",   color: "#f43f5e" },
-  { icon: "fa-rocket",       seed: "modern-city", color: "#6366f1" },
+  { icon: "fa-store",        seed: "shop-store",  color: "#5f725f" },
+  { icon: "fa-star",         seed: "city-street", color: "#9b865c" },
+  { icon: "fa-bullseye",     seed: "work-team",   color: "#6f766f" },
+  { icon: "fa-rocket",       seed: "modern-city", color: "#31584c" },
 ];
 
 function normalize(str) {
@@ -149,27 +148,15 @@ function HomePage() {
       <div className="hero">
         <HeroSlideshow />
 
-        {/* LOGOS PANEL */}
-        <div className="hero-logos">
-          <div className="hero-logo-wrap">
-            <img src="/logo1.png" alt="Cámara de Comercio Turismo, Industria y Producción — Paso de la Patria" />
-          </div>
-          <div className="hero-logos-divider" />
-          <div className="hero-logo-wrap">
-            <img src="/logo2.avif" alt="El Paso — Turismo Todo el Año" />
-          </div>
-        </div>
-
         <div className="hero-content">
           <p className="eyebrow">
             <i className="fas fa-location-dot" style={{ marginRight: "0.4rem" }} />
-            Paso de la Patria, Corrientes
+            Guia local actualizada
           </p>
-          <h2>Descubri Paso de la Patria, entre playas, rio y aventura</h2>
+          <h2>Guia comercial para tu ciudad</h2>
           <p>
-            Explora uno de los destinos mas elegidos de Corrientes: pesca
-            deportiva, naturaleza, gastronomia y experiencias para disfrutar
-            todo el ano.
+            Un directorio claro para consultar rubros, contactos, eventos y
+            telefonos utiles sin vueltas.
           </p>
           <Link to="/comercios" className="button-link">
             <i className="fas fa-map" style={{ marginRight: "0.5rem" }} />
@@ -241,14 +228,14 @@ function HomePage() {
       {/* BANNER */}
       <div className="banner-wrap">
         <img
-          src="/570.jpg"
-          alt="Comercios locales de Paso de la Patria"
+          src="https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?auto=format&fit=crop&w=1500&q=80"
+          alt="Comercios locales"
           className="section-banner"
           loading="lazy"
         />
         <div className="banner-overlay">
-          <h1>El corazón del Paraná</h1>
-          <p>Playas, pesca deportiva, gastronomía y aventura en Paso de la Patria, Corrientes.</p>
+          <h1>Todo lo local en un solo lugar</h1>
+          <p>Gastronomia, compras, alojamiento, servicios y actividades para consultar rapido.</p>
         </div>
       </div>
 

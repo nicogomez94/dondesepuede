@@ -1,37 +1,9 @@
 services:
-  # Backend API (Node.js + Express + Prisma)
   - type: web
-    name: EMILIO-OTRO-db
-    runtime: node
-    region: oregon
-    plan: free
-    buildCommand: cd backend && npm install && npx prisma generate && printf 'CREATE SCHEMA IF NOT EXISTS emilio;' | npx prisma db execute --stdin --schema prisma/schema.prisma && npx prisma migrate deploy
-    startCommand: cd backend && npm start
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: 4000
-      - key: DATABASE_URL
-        value: postgresql://seguros2_db_user:iVpTPyhcuNR2L0eYfU7lwuovs4zM0hPn@dpg-d829vl7avr4c73berimg-a/seguros2_db?schema=emilio
-      - key: JWT_SECRET
-        generateValue: true
-      - key: ADMIN_USERNAME
-        value: admin
-      - key: ADMIN_PASSWORD
-        value: admin123
-    healthCheckPath: /api/health
-    autoDeploy: true
-
-  # Frontend Static Site (React + Vite)
-  - type: web
-    name: emilio-frontend-shared-db
+    name: guia-comercial-local
     runtime: static
     buildCommand: cd frontend && npm ci && npm run build
     staticPublishPath: ./frontend/dist
-    envVars:
-      - key: VITE_API_URL
-        value: https://emilio-otro-db.onrender.com/api
     routes:
       - type: rewrite
         source: /*

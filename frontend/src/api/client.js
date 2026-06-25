@@ -1,4 +1,7 @@
+import { PRELOADED_DATA } from "../data/preloadedData";
+
 const rawApiUrl = (import.meta.env.VITE_API_URL || "http://localhost:4000/api").replace(/\/$/, "");
+const STORAGE_KEY = "genericDirectoryData:v2";
 
 function normalizeApiBaseUrl(url) {
   if (/\/api$/i.test(url)) return url;
@@ -8,35 +11,88 @@ function normalizeApiBaseUrl(url) {
 const API_BASE_URL = normalizeApiBaseUrl(rawApiUrl);
 const FILES_BASE_URL = API_BASE_URL.replace(/\/api$/, "");
 
-async function request(path, options = {}) {
-  const { token, isFormData = false, body, ...rest } = options;
-
-  const headers = {
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    ...(isFormData ? {} : { "Content-Type": "application/json" }),
-    ...(rest.headers || {}),
-  };
-
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...rest,
-    headers,
-    body: isFormData ? body : body ? JSON.stringify(body) : undefined,
-  });
-
-  const isJson = response.headers.get("content-type")?.includes("application/json");
-  const data = isJson ? await response.json() : null;
-
-  if (!response.ok) {
-    throw new Error(data?.message || "Error en la solicitud.");
-  }
-
-  return data;
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
 }
 
-export function resolveImageUrl(logoUrl) {
-  if (!logoUrl) return "https://placehold.co/640x420?text=Sin+imagen";
-  if (logoUrl.startsWith("http")) return logoUrl;
-  return `${FILES_BASE_URL}${logoUrl.startsWith("/") ? logoUrl : `/${logoUrl}`}`;
+function normalizeText(value) {
+  return String(value || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "");
+}
+
+function isBrowser() {
+  return typeof window !== "undefined" && Boolean(window.localStorage);
+}
+
+function withCategoryCounts(data) {
+  const businesses = data.businesses.map((business) => {
+    const category = data.categories.find((item) => Number(item.id) === Number(business.categoryId)) || null;
+    return { ...business, category };
+  });
+
+  const categories = data.categories.map((category) => ({
+    ...category,
+    _count: {
+      businesses: businesses.filter((business) => Number(business.categoryId) === Number(category.id)).length,
+    },
+  }));
+
+  return { ...data, categories, businesses };
+}
+
+function getStoredData() {
+  if (!isBrowser()) return withCategoryCounts(clone(PRELOADED_DATA));
+
+  const stored = window.localStorage.getItem(STORAGE_KEY);
+  if (!stored) {
+    const initialData = withCategoryCounts(clone(PRELOADED_DATA));
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(initialData));
+    return initialData;
+  }
+
+  try {
+    return withCategoryCounts(JSON.parse(stored));
+  } catch {
+    const initialData = withCategoryCounts(clone(PRELOADED_DATA));
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(initialData));
+    return initialData;
+  }
+}
+
+function saveData(nextData) {
+  const normalizedData = withCategoryCounts(nextData);
+  if (isBrowser()) {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizedData));
+  }
+  return normalizedData;
+}
+
+function nextId(items) {
+  return items.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1;
+}
+
+function sortByName(items) {
+  return [...items].sort((a, b) => a.name.localeCompare(b.name, "es"));
+}
+
+function sortEvents(items) {
+  return [...items].sort((a, b) => new Date(a.startsAt) - new Date(b.startsAt) || Number(b.id) - Number(a.id));
+}
+
+function sortUsefulPhones(items) {
+  return [...items].sort((a, b) => Number(a.sortOrder || 0) - Number(b.sortOrder || 0));
+}
+
+function reject(message) {
+  return Promise.reject(new Error(message));
+}
+
+export function resolveImageUrl(imageUrl) {
+  if (!imageUrl) return "https://placehold.co/640x420?text=Sin+imagen";
+  if (/^(https?:|data:|blob:)/i.test(imageUrl)) return imageUrl;
+  return `${FILES_BASE_URL}${imageUrl.startsWith("/") ? imageUrl : `/${imageUrl}`}`;
 }
 
 export function getApiBaseUrl() {
@@ -44,157 +100,288 @@ export function getApiBaseUrl() {
 }
 
 export async function fetchCategories() {
-  return request("/categories");
+  return sortByName(getStoredData().categories);
 }
 
 export async function fetchBusinesses({ search = "", categoryId = "" } = {}) {
-  const query = new URLSearchParams();
-  if (search.trim()) query.set("search", search.trim());
-  if (categoryId) query.set("categoryId", categoryId);
-  const suffix = query.toString() ? `?${query.toString()}` : "";
-  return request(`/businesses${suffix}`);
+  const data = getStoredData();
+  const searchTerm = normalizeText(search);
+  const selectedCategory = Number(categoryId);
+
+  return data.businesses.filter((business) => {
+    const matchesSearch = !searchTerm || [business.name, business.description, business.address]
+      .some((value) => normalizeText(value).includes(searchTerm));
+    const matchesCategory = !selectedCategory || Number(business.categoryId) === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 }
 
 export async function fetchBusinessById(id) {
-  return request(`/businesses/${id}`);
+  const business = getStoredData().businesses.find((item) => Number(item.id) === Number(id));
+  if (!business) throw new Error("Comercio no encontrado.");
+  return business;
 }
 
 export async function fetchEvents({ search = "", month = "", status = "" } = {}) {
-  const query = new URLSearchParams();
-  if (search.trim()) query.set("search", search.trim());
-  if (month) query.set("month", month);
-  if (status) query.set("status", status);
-  const suffix = query.toString() ? `?${query.toString()}` : "";
-  return request(`/events${suffix}`);
+  const searchTerm = normalizeText(search);
+  const now = new Date();
+
+  return sortEvents(getStoredData().events).filter((event) => {
+    const startsAt = new Date(event.startsAt);
+    const matchesSearch = !searchTerm || [event.title, event.description, event.location]
+      .some((value) => normalizeText(value).includes(searchTerm));
+    const matchesMonth = !month || event.startsAt?.slice(0, 7) === month;
+    const matchesStatus =
+      !status ||
+      (status === "upcoming" && startsAt >= now) ||
+      (status === "past" && startsAt < now);
+    return matchesSearch && matchesMonth && matchesStatus;
+  });
 }
 
 export async function fetchUsefulPhones() {
-  return request("/useful-phones");
+  return sortUsefulPhones(getStoredData().usefulPhones);
 }
 
-export async function loginAdmin(credentials) {
-  return request("/auth/login", {
-    method: "POST",
-    body: credentials,
+export async function adminFetchCategories() {
+  return fetchCategories();
+}
+
+export async function adminCreateCategory(_token, payload) {
+  const data = getStoredData();
+  if (!payload.name?.trim()) return reject("El nombre es obligatorio.");
+
+  const nextData = saveData({
+    ...data,
+    categories: [
+      ...data.categories,
+      {
+        id: nextId(data.categories),
+        name: payload.name.trim(),
+        imageUrl: payload.imageUrl?.trim() || "",
+      },
+    ],
+  });
+
+  return nextData.categories.find((category) => category.name === payload.name.trim());
+}
+
+export async function adminUpdateCategory(_token, id, payload) {
+  const data = getStoredData();
+  const categoryId = Number(id);
+  if (!categoryId || !payload.name?.trim()) return reject("Datos invalidos.");
+
+  const nextData = saveData({
+    ...data,
+    categories: data.categories.map((category) =>
+      Number(category.id) === categoryId
+        ? { ...category, name: payload.name.trim(), imageUrl: payload.imageUrl?.trim() || "" }
+        : category,
+    ),
+  });
+
+  return nextData.categories.find((category) => Number(category.id) === categoryId);
+}
+
+export async function adminDeleteCategory(_token, id) {
+  const data = getStoredData();
+  const categoryId = Number(id);
+  if (data.businesses.some((business) => Number(business.categoryId) === categoryId)) {
+    return reject("No se puede eliminar una categoria con comercios asociados.");
+  }
+
+  saveData({
+    ...data,
+    categories: data.categories.filter((category) => Number(category.id) !== categoryId),
+  });
+  return null;
+}
+
+export async function adminFetchBusinesses() {
+  return getStoredData().businesses;
+}
+
+export async function adminCreateBusiness(_token, payload) {
+  const data = getStoredData();
+  if (!payload.name?.trim() || !Number(payload.categoryId)) {
+    return reject("Nombre y categoria son obligatorios.");
+  }
+
+  const nextBusiness = {
+    id: nextId(data.businesses),
+    name: payload.name.trim(),
+    description: payload.description?.trim() || "",
+    phone: payload.phone?.trim() || "",
+    address: payload.address?.trim() || "",
+    logoUrl: payload.logoUrl?.trim() || "",
+    categoryId: Number(payload.categoryId),
+    instagram: payload.instagram?.trim() || "",
+    facebook: payload.facebook?.trim() || "",
+    website: payload.website?.trim() || "",
+  };
+
+  const nextData = saveData({ ...data, businesses: [nextBusiness, ...data.businesses] });
+  return nextData.businesses.find((business) => Number(business.id) === Number(nextBusiness.id));
+}
+
+export async function adminUpdateBusiness(_token, id, payload) {
+  const data = getStoredData();
+  const businessId = Number(id);
+  if (!businessId || !payload.name?.trim() || !Number(payload.categoryId)) {
+    return reject("Datos invalidos.");
+  }
+
+  const nextData = saveData({
+    ...data,
+    businesses: data.businesses.map((business) =>
+      Number(business.id) === businessId
+        ? {
+            ...business,
+            name: payload.name.trim(),
+            description: payload.description?.trim() || "",
+            phone: payload.phone?.trim() || "",
+            address: payload.address?.trim() || "",
+            logoUrl: payload.logoUrl?.trim() || "",
+            categoryId: Number(payload.categoryId),
+            instagram: payload.instagram?.trim() || "",
+            facebook: payload.facebook?.trim() || "",
+            website: payload.website?.trim() || "",
+          }
+        : business,
+    ),
+  });
+
+  return nextData.businesses.find((business) => Number(business.id) === businessId);
+}
+
+export async function adminDeleteBusiness(_token, id) {
+  const data = getStoredData();
+  saveData({
+    ...data,
+    businesses: data.businesses.filter((business) => Number(business.id) !== Number(id)),
+  });
+  return null;
+}
+
+export async function adminFetchEvents() {
+  return sortEvents(getStoredData().events);
+}
+
+export async function adminCreateEvent(_token, payload) {
+  const data = getStoredData();
+  if (!payload.title?.trim() || !payload.description?.trim() || !payload.location?.trim() || !payload.startsAt) {
+    return reject("Titulo, descripcion, lugar y fecha de inicio son obligatorios.");
+  }
+
+  const nextEvent = {
+    id: nextId(data.events),
+    title: payload.title.trim(),
+    description: payload.description.trim(),
+    location: payload.location.trim(),
+    startsAt: new Date(payload.startsAt).toISOString(),
+    endsAt: payload.endsAt ? new Date(payload.endsAt).toISOString() : null,
+    imageUrl: payload.imageUrl?.trim() || "",
+  };
+
+  const nextData = saveData({ ...data, events: [...data.events, nextEvent] });
+  return nextData.events.find((event) => Number(event.id) === Number(nextEvent.id));
+}
+
+export async function adminUpdateEvent(_token, id, payload) {
+  const data = getStoredData();
+  const eventId = Number(id);
+  if (!eventId || !payload.title?.trim() || !payload.description?.trim() || !payload.location?.trim() || !payload.startsAt) {
+    return reject("Datos invalidos.");
+  }
+
+  const nextData = saveData({
+    ...data,
+    events: data.events.map((event) =>
+      Number(event.id) === eventId
+        ? {
+            ...event,
+            title: payload.title.trim(),
+            description: payload.description.trim(),
+            location: payload.location.trim(),
+            startsAt: new Date(payload.startsAt).toISOString(),
+            endsAt: payload.endsAt ? new Date(payload.endsAt).toISOString() : null,
+            imageUrl: payload.imageUrl?.trim() || "",
+          }
+        : event,
+    ),
+  });
+
+  return nextData.events.find((event) => Number(event.id) === eventId);
+}
+
+export async function adminDeleteEvent(_token, id) {
+  const data = getStoredData();
+  saveData({
+    ...data,
+    events: data.events.filter((event) => Number(event.id) !== Number(id)),
+  });
+  return null;
+}
+
+export async function adminUploadImage(_token, file) {
+  if (!file) return reject("Archivo no recibido.");
+
+  return new Promise((resolve, rejectPromise) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve({ url: reader.result, filename: file.name });
+    reader.onerror = () => rejectPromise(new Error("No se pudo leer la imagen."));
+    reader.readAsDataURL(file);
   });
 }
 
-export async function adminFetchCategories(token) {
-  return request("/admin/categories", { token });
+export async function adminFetchUsefulPhones() {
+  return fetchUsefulPhones();
 }
 
-export async function adminCreateCategory(token, payload) {
-  return request("/admin/categories", {
-    method: "POST",
-    token,
-    body: payload,
+export async function adminCreateUsefulPhone(_token, payload) {
+  const data = getStoredData();
+  if (!payload.label?.trim() || !payload.number?.trim()) return reject("Etiqueta y numero son obligatorios.");
+
+  const nextPhone = {
+    id: nextId(data.usefulPhones),
+    label: payload.label.trim(),
+    number: payload.number.trim(),
+    color: payload.color?.trim() || "#31584c",
+    sortOrder: Number(payload.sortOrder || 0),
+  };
+
+  const nextData = saveData({ ...data, usefulPhones: [...data.usefulPhones, nextPhone] });
+  return nextData.usefulPhones.find((phone) => Number(phone.id) === Number(nextPhone.id));
+}
+
+export async function adminUpdateUsefulPhone(_token, id, payload) {
+  const data = getStoredData();
+  const phoneId = Number(id);
+  if (!phoneId || !payload.label?.trim() || !payload.number?.trim()) return reject("Datos invalidos.");
+
+  const nextData = saveData({
+    ...data,
+    usefulPhones: data.usefulPhones.map((phone) =>
+      Number(phone.id) === phoneId
+        ? {
+            ...phone,
+            label: payload.label.trim(),
+            number: payload.number.trim(),
+            color: payload.color?.trim() || "#31584c",
+            sortOrder: Number(payload.sortOrder || 0),
+          }
+        : phone,
+    ),
   });
+
+  return nextData.usefulPhones.find((phone) => Number(phone.id) === phoneId);
 }
 
-export async function adminUpdateCategory(token, id, payload) {
-  return request(`/admin/categories/${id}`, {
-    method: "PUT",
-    token,
-    body: payload,
+export async function adminDeleteUsefulPhone(_token, id) {
+  const data = getStoredData();
+  saveData({
+    ...data,
+    usefulPhones: data.usefulPhones.filter((phone) => Number(phone.id) !== Number(id)),
   });
-}
-
-export async function adminDeleteCategory(token, id) {
-  return request(`/admin/categories/${id}`, {
-    method: "DELETE",
-    token,
-  });
-}
-
-export async function adminFetchBusinesses(token) {
-  return request("/admin/businesses", { token });
-}
-
-export async function adminCreateBusiness(token, payload) {
-  return request("/admin/businesses", {
-    method: "POST",
-    token,
-    body: payload,
-  });
-}
-
-export async function adminUpdateBusiness(token, id, payload) {
-  return request(`/admin/businesses/${id}`, {
-    method: "PUT",
-    token,
-    body: payload,
-  });
-}
-
-export async function adminDeleteBusiness(token, id) {
-  return request(`/admin/businesses/${id}`, {
-    method: "DELETE",
-    token,
-  });
-}
-
-export async function adminFetchEvents(token) {
-  return request("/admin/events", { token });
-}
-
-export async function adminCreateEvent(token, payload) {
-  return request("/admin/events", {
-    method: "POST",
-    token,
-    body: payload,
-  });
-}
-
-export async function adminUpdateEvent(token, id, payload) {
-  return request(`/admin/events/${id}`, {
-    method: "PUT",
-    token,
-    body: payload,
-  });
-}
-
-export async function adminDeleteEvent(token, id) {
-  return request(`/admin/events/${id}`, {
-    method: "DELETE",
-    token,
-  });
-}
-
-export async function adminUploadImage(token, file) {
-  const formData = new FormData();
-  formData.append("image", file);
-
-  return request("/admin/upload/image", {
-    method: "POST",
-    token,
-    body: formData,
-    isFormData: true,
-  });
-}
-
-export async function adminFetchUsefulPhones(token) {
-  return request("/admin/useful-phones", { token });
-}
-
-export async function adminCreateUsefulPhone(token, payload) {
-  return request("/admin/useful-phones", {
-    method: "POST",
-    token,
-    body: payload,
-  });
-}
-
-export async function adminUpdateUsefulPhone(token, id, payload) {
-  return request(`/admin/useful-phones/${id}`, {
-    method: "PUT",
-    token,
-    body: payload,
-  });
-}
-
-export async function adminDeleteUsefulPhone(token, id) {
-  return request(`/admin/useful-phones/${id}`, {
-    method: "DELETE",
-    token,
-  });
+  return null;
 }

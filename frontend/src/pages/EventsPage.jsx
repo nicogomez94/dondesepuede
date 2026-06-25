@@ -42,14 +42,14 @@ function EventsPage() {
     <section className="stack-md">
       <div className="banner-wrap">
         <img
-          src="/eventos.jpg"
-          alt="Agenda de eventos en Paso de la Patria"
+          src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1500&q=80"
+          alt="Agenda de eventos"
           className="section-banner"
           loading="lazy"
         />
         <div className="banner-overlay">
           <h1>Eventos y actividades</h1>
-          <p>Ferias, festivales, torneos de pesca y mucho más. La agenda cultural de Paso de la Patria.</p>
+          <p>Ferias, talleres, encuentros y propuestas para compartir en la comunidad.</p>
         </div>
       </div>
       <div>
