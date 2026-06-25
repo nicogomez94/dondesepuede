@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: guia-comercial-local
+    name: directorio-comercial-local
     runtime: static
     buildCommand: cd frontend && npm ci && npm run build
     staticPublishPath: ./frontend/dist
